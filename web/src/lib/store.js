@@ -66,6 +66,38 @@ export function usePlans() {
   return { plans, source };
 }
 
+// ---- Text messages for farmers without a smartphone ----
+// "farmers" (phone numbers) can be added from the website but never read back; only the sender script reads it.
+// "campaigns" are send requests the sender script picks up; "outbox" is what it sent, with numbers masked.
+async function addTo(collection, doc) {
+  const f = await firestore().catch(() => null);
+  if (!f) throw new Error("The shared register is not configured on this site.");
+  const write = f.m.addDoc(f.m.collection(f.db, collection), { ...doc, createdAt: new Date().toISOString() });
+  // offline: the write waits in the local queue and syncs later
+  const timeout = new Promise((ok) => setTimeout(() => ok("queued"), 8000));
+  const r = await Promise.race([write.then(() => "saved"), timeout]);
+  return r;
+}
+export const addFarmer = (farmer) => addTo("farmers", { ...farmer, consent: true });
+export const requestCampaign = (type, district = "all") => addTo("campaigns", { type, district, status: "new" });
+
+function useLive(collection, n) {
+  const [rows, setRows] = useState([]);
+  const [err, setErr] = useState(null);
+  useEffect(() => {
+    let unsub = () => {};
+    firestore().then((f) => {
+      if (!f) { setErr("not configured"); return; }
+      const q = f.m.query(f.m.collection(f.db, collection), f.m.orderBy("createdAt", "desc"), f.m.limit(n));
+      unsub = f.m.onSnapshot(q, (snap) => setRows(snap.docs.map((d) => ({ id: d.id, ...d.data() }))), (e) => setErr(e.code || e.message));
+    });
+    return () => unsub();
+  }, [collection, n]);
+  return [rows, err];
+}
+export const useOutbox = () => useLive("outbox", 60);
+export const useCampaigns = () => useLive("campaigns", 5);
+
 // Sum of registered area per district, season and crop; feeds the market loop and the gov coverage figure.
 export function aggregatePlans(plans) {
   const agg = {};

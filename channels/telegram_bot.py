@@ -37,6 +37,26 @@ def call(tok, method, **params):
         return json.load(r)["result"]
 
 
+def link_or_reply(chat_id, text):
+    """JOIN <phone> links this chat to a registered farmer's phone, so season advice and alerts arrive here
+    (the free stand-in for SMS). STOP removes the link. Anything else goes to the normal conversation."""
+    import sms_gateway as gw
+    words = text.strip().split()
+    cmd = words[0].upper().lstrip("/") if words else ""
+    if cmd == "JOIN":
+        phone = gw.normalize_phone("".join(words[1:]))
+        if not phone:
+            return "Send JOIN and your mobile number, for example: JOIN 0771234567"
+        gw.save_link(phone, chat_id)
+        return f"Linked {gw.mask(phone)}. Season advice and weather alerts for this number will arrive here. Send STOP to end."
+    if cmd == "STOP":
+        for phone, chat in list(gw.links().items()):
+            if chat == chat_id:
+                gw.save_link(phone, None)
+        return "Stopped. You will get no more messages. Send JOIN and your number to start again."
+    return reply(chat_id, text)
+
+
 def main():
     tok = token()
     me = call(tok, "getMe")
@@ -50,7 +70,7 @@ def main():
                 offset = u["update_id"] + 1
                 msg = u.get("message") or {}
                 if "text" in msg:
-                    call(tok, "sendMessage", chat_id=msg["chat"]["id"], text=reply(msg["chat"]["id"], msg["text"]))
+                    call(tok, "sendMessage", chat_id=msg["chat"]["id"], text=link_or_reply(msg["chat"]["id"], msg["text"]))
         except Exception as e:  # network hiccup: wait and carry on (the error text may contain the URL, so it is not printed)
             print("poll error:", type(e).__name__, flush=True)
             time.sleep(5)

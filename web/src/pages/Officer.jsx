@@ -3,6 +3,7 @@ import { useData, fmt } from "../lib/data.js";
 import { byId, rotName } from "../lib/model.js";
 import { savePlan, usePlans, hasFirebase } from "../lib/store.js";
 import { Card, Loading, Tile } from "../components/ui.jsx";
+import SmsPanel from "../components/SmsPanel.jsx";
 
 export default function Officer() {
   const [data, error] = useData(["/data/crops.json", "/geo/districts.json"]);
@@ -54,6 +55,7 @@ export default function Officer() {
                 <tr key={p.id || i}><td>{(p.createdAt || "").slice(0, 10)}</td><td>{p.farmerRef || "self"}</td><td>{dName[p.districtId]?.name || p.districtId}</td><td>{p.rotation ? rotName(p.rotation, crops) : ""}</td><td className="num">{p.areaHa}</td><td>{p.by}</td></tr>))}</tbody></table>)}
         </Card>
       </div>
+      <SmsPanel districts={districts} cropList={cropList} />
     </div>
   );
 }

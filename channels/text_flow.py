@@ -12,7 +12,8 @@ TABLE_PATH = Path(__file__).resolve().parents[1] / "web/public/data/bot_table.js
 WATER = {"1": "rain", "2": "tank", "3": "well"}
 PRIORITY = {"1": "income", "2": "water", "3": "soil", "4": "safe"}
 HELP = ("Field Shift crop advice.\nSend PLAN to get crop choices for your district.\n"
-        "Send SOWED <crop> <date>, e.g. SOWED paddy 2021-10-25, to get this week's field actions.")
+        "Send SOWED <crop> <date>, e.g. SOWED paddy 2021-10-25, to get this week's field actions.\n"
+        "Registered by your officer? Send JOIN <your mobile number> to get season advice and weather alerts here.")
 
 _sessions = {}
 _table = None

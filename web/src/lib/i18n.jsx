@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import NAMES from "./names.json";
 
 // Farmer-page text in English, Sinhala and Tamil. Choice comes from ?lang=si|ta|en, then the last choice on this phone.
 // Sinhala and Tamil drafts should be checked by a native speaker (ideally an agricultural instructor) before field use.
@@ -97,14 +98,9 @@ const T = {
   },
 };
 
-const CROPS = {
-  si: { paddy: "වී", maize: "බඩ ඉරිඟු", greengram: "මුං ඇට", cowpea: "කව්පි", bigonion: "ලොකු ළූණු", chilli: "අමු මිරිස්", fallow: "කුඹුර විවේක කරන්න" },
-  ta: { paddy: "நெல்", maize: "சோளம்", greengram: "பாசிப்பயறு", cowpea: "கௌபி", bigonion: "பெரிய வெங்காயம்", chilli: "பச்சை மிளகாய்", fallow: "நிலத்தை ஓய்வில் விடுங்கள்" },
-};
-const DISTRICTS = {
-  si: { colombo: "කොළඹ", gampaha: "ගම්පහ", kalutara: "කළුතර", kandy: "මහනුවර", matale: "මාතලේ", "nuwara-eliya": "නුවරඑළිය", galle: "ගාල්ල", matara: "මාතර", hambantota: "හම්බන්තොට", jaffna: "යාපනය", kilinochchi: "කිලිනොච්චිය", mannar: "මන්නාරම", vavuniya: "වවුනියාව", mullaitivu: "මුලතිව්", batticaloa: "මඩකලපුව", ampara: "අම්පාර", trincomalee: "ත්‍රිකුණාමලය", kurunegala: "කුරුණෑගල", puttalam: "පුත්තලම", anuradhapura: "අනුරාධපුරය", polonnaruwa: "පොළොන්නරුව", badulla: "බදුල්ල", monaragala: "මොණරාගල", ratnapura: "රත්නපුරය", kegalle: "කෑගල්ල" },
-  ta: { colombo: "கொழும்பு", gampaha: "கம்பஹா", kalutara: "களுத்துறை", kandy: "கண்டி", matale: "மாத்தளை", "nuwara-eliya": "நுவரெலியா", galle: "காலி", matara: "மாத்தறை", hambantota: "அம்பாந்தோட்டை", jaffna: "யாழ்ப்பாணம்", kilinochchi: "கிளிநொச்சி", mannar: "மன்னார்", vavuniya: "வவுனியா", mullaitivu: "முல்லைத்தீவு", batticaloa: "மட்டக்களப்பு", ampara: "அம்பாறை", trincomalee: "திருகோணமலை", kurunegala: "குருநாகல்", puttalam: "புத்தளம்", anuradhapura: "அனுராதபுரம்", polonnaruwa: "பொலன்னறுவை", badulla: "பதுளை", monaragala: "மொனராகலை", ratnapura: "இரத்தினபுரி", kegalle: "கேகாலை" },
-};
+// Crop and district names in Sinhala and Tamil; shared with the SMS message generator (channels/sms_messages.py).
+const CROPS = NAMES.crops;
+const DISTRICTS = NAMES.districts;
 
 function initial() {
   const q = new URLSearchParams(location.search).get("lang");

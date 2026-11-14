@@ -1,8 +1,9 @@
 rules_version = '2';
-// Demo rules: anyone can read, anyone can add a plan, nobody can change or delete one.
-// Before real use: require sign-in for writes and keep farmer references out of public reads.
+// Demo rules. Before real use: require sign-in for every write (officers only for farmers and campaigns).
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Crop plans: anyone can read, anyone can add one, nobody can change or delete one.
     match /plans/{id} {
       allow read: if true;
       allow create: if request.resource.data.districtId is string
@@ -12,7 +13,32 @@ service cloud.firestore {
                     && request.resource.data.keys().size() <= 12;
       allow update, delete: if false;
     }
-    match /{document=**} {
+
+    // Farmers registered for text messages. Holds phone numbers, so the website can add but never read them;
+    // only the sender script (Firebase service account, which bypasses these rules) reads this collection.
+    match /farmers/{id} {
+      allow read, update, delete: if false;
+      allow create: if request.resource.data.phone is string
+                    && request.resource.data.phone.matches('^[+]947[0-9]{8}$')
+                    && request.resource.data.district is string
+                    && request.resource.data.lang in ['en', 'si', 'ta']
+                    && request.resource.data.water in ['rain', 'tank', 'well']
+                    && request.resource.data.goal in ['income', 'water', 'soil', 'safe']
+                    && request.resource.data.consent == true
+                    && request.resource.data.keys().size() <= 10;
+    }
+
+    // Send requests from the Officer desk; the sender script marks them done.
+    match /campaigns/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.type in ['season', 'alerts']
+                    && request.resource.data.status == 'new'
+                    && request.resource.data.keys().size() <= 5;
+      allow update, delete: if false;
+    }
+
+    // Messages sent, phone numbers masked. Written only by the sender script.
+    match /outbox/{id} {
       allow read: if true;
       allow write: if false;
     }
