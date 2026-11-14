@@ -113,7 +113,7 @@ const best = ym.bestModel, R = ym.results;
 const out = {
   meta: { ...meta, sample: false, note: "Simulation. The 'with app' side is not an observation." },
   method: [
-    `Paddy yield model (${best}) trained on district seasons 1983-2020 only; tested on Maha 2020/21 and Yala 2021 against DCS statistics.`,
+    `Paddy yield model (${best}) trained on district ${ym.trainedOn || "seasons up to 2020"} only; tested on Maha 2020/21 and Yala 2021 against DCS statistics.`,
     "Without the app: DCS 2021 areas and yields (paddy) and DCS 2021 areas with typical yields under 2021 weather (other crops), valued at 2021 HARTI farmgate prices.",
     "With the app: advice from pre-2021 climate, water balance and yields for a typical tank-irrigated farm. A farmer switches only if the new rotation earns at least as much. 10, 30 or 50 % of area follows the advice; valued under the actual 2021 weather.",
     `Market rule: the app stops advising a crop once planned national supply would move its price more than ${BAND * 100} % either way, or the rice price more than 5 % (food security). Prices respond to supply with assumed elasticities.`,
