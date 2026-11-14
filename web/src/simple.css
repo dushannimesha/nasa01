@@ -1,0 +1,51 @@
+/* location picker (GPS button + name search) */
+.locpick { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; margin-bottom: 10px; }
+.locpick .or { align-self: center; color: var(--muted); font-size: 0.85rem; }
+.locpick .search { position: relative; flex: 1 1 200px; }
+.locpick .gps { white-space: nowrap; }
+.suggest { position: absolute; z-index: 1200; left: 0; right: 0; top: 100%; margin: 4px 0 0; padding: 4px; list-style: none; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
+.suggest li { margin: 0; }
+.suggest button { width: 100%; text-align: left; font: inherit; background: none; border: 0; padding: 10px; border-radius: 7px; cursor: pointer; color: var(--ink2); }
+.suggest button:hover, .suggest button:focus-visible { background: var(--wash); }
+.suggest b { color: var(--ink); }
+.locmsg { flex-basis: 100%; margin: 0; color: var(--critical); font-size: 0.9rem; }
+.locpick.big { flex-direction: column; align-items: stretch; }
+.locpick.big .gps { font-size: 1.15rem; padding: 16px; border-radius: 12px; }
+.locpick.big input { font-size: 1.1rem; padding: 14px; border-radius: 12px; }
+.locpick.big .search { flex: none; }
+
+/* simple farmer page: large type, large buttons, one column */
+.simple { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; font-size: 1.08rem; }
+.simple h1 { font-size: 1.9rem; text-align: center; margin: 6px 0; }
+.simple h2 { font-size: 1.15rem; margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
+.simple h2 span { flex: none; display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 1rem; }
+.s-step, .s-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.s-picked { display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; }
+.link { font: inherit; background: none; border: 0; color: var(--brand2); text-decoration: underline; cursor: pointer; padding: 8px; }
+.s-choices { display: grid; gap: 8px; }
+.s-choices.three { grid-template-columns: repeat(3, 1fr); }
+.s-choices.four { grid-template-columns: repeat(2, 1fr); }
+.s-choices button { font: inherit; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px; min-height: 84px; border: 2px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink); cursor: pointer; }
+.s-choices i { font-style: normal; font-size: 1.7rem; line-height: 1; }
+.s-choices button.on { border-color: var(--brand); background: var(--wash); box-shadow: inset 0 0 0 1px var(--brand); }
+.s-go, .s-pick { font: inherit; font-weight: 700; border: 0; cursor: pointer; color: #fff; background: var(--brand); border-radius: 16px; }
+.s-go { font-size: 1.35rem; padding: 20px; background: #0a7a0a; box-shadow: 0 4px 14px rgba(10, 122, 10, 0.35); }
+.s-go:disabled { background: var(--muted); box-shadow: none; cursor: not-allowed; }
+.s-results { display: flex; flex-direction: column; gap: 12px; }
+.s-results h2 { margin: 6px 0 0; }
+.s-test { background: #fff6dc; border: 1px solid var(--warning); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; margin: 0; }
+.s-card.best { border: 2px solid #0a7a0a; }
+.s-badge { display: inline-block; background: #0a7a0a; color: #fff; font-weight: 700; font-size: 0.85rem; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+.s-seasons { display: flex; align-items: center; gap: 10px; }
+.s-seasons > div:not(.s-arrow) { flex: 1; }
+.s-seasons small { display: block; color: var(--muted); font-size: 0.8rem; }
+.s-seasons b { font-size: 1.3rem; display: flex; align-items: center; }
+.s-seasons .dot { width: 14px; height: 14px; flex: none; }
+.s-arrow { font-size: 1.5rem; color: var(--muted); }
+.s-money { font-size: 1.2rem; font-weight: 700; margin: 12px 0 4px; }
+.s-money small { font-weight: 400; color: var(--ink2); font-size: 0.85rem; }
+.s-why, .s-care { color: var(--ink2); font-size: 0.98rem; margin: 0 0 8px; }
+.s-pick { width: 100%; font-size: 1.1rem; padding: 14px; margin-top: 6px; }
+.s-saved { color: #006300; font-weight: 700; margin: 8px 0 0; }
+.s-now, .s-foot { color: var(--ink2); font-size: 0.95rem; margin: 0; }
+.s-adv { align-self: center; padding: 12px; color: var(--brand2); font-weight: 600; }
