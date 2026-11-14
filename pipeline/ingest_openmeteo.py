@@ -38,21 +38,22 @@ def main():
     out = json.loads(OUT.read_text()) if OUT.exists() else {}
     limited = [False]
     for d in districts:
-        if d["id"] in out and out[d["id"]].get("future") and not out[d["id"]]["future"].get("borrowedFrom"):
-            continue
         loc = {"latitude": d["lat"], "longitude": d["lon"]}
-        # --- seasonal outlook: monthly rain totals from the ensemble mean ---
-        s = get("https://seasonal-api.open-meteo.com/v1/seasonal", {**loc, "daily": "precipitation_sum", "forecast_days": 183})
-        sd = pd.DataFrame({"t": pd.to_datetime(s["daily"]["time"])})
-        members = [k for k in s["daily"] if k.startswith("precipitation_sum")]
-        sd["rain"] = pd.DataFrame({k: s["daily"][k] for k in members}).mean(axis=1)
-        sd = sd[sd.t.dt.day.groupby(sd.t.dt.to_period("M")).transform("count") >= 25]  # whole months only
-        mon = sd.groupby(sd.t.dt.to_period("M")).rain.sum().head(3)
-        normal = sum(climate[d["id"]]["rain"][p.month - 1] for p in mon.index)
-        pct = (mon.sum() / normal - 1) * 100 if normal else 0
-        seasonal = {"months": [str(p) for p in mon.index], "rain_mm": round(float(mon.sum())), "normal_mm": round(normal), "anomaly_pct": round(float(pct)),
+        # --- seasonal outlook for the next 3 whole months. The anomaly is against the forecast model's own normal
+        # (raw model rain is biased: up to 2.5x wetter than POWER in the wet zone), then applied to the POWER normal. ---
+        s = get("https://seasonal-api.open-meteo.com/v1/seasonal", {**loc, "monthly": "precipitation_mean,precipitation_anomaly"})["monthly"]
+        m = pd.DataFrame({"t": pd.to_datetime(s["time"]), "mean": s["precipitation_mean"], "anom": s["precipitation_anomaly"]}).dropna()
+        m = m[m.t > pd.Timestamp(date.today())].head(3)
+        model_normal = float((m["mean"] - m["anom"]).sum())
+        pct = float(m["anom"].sum()) / model_normal * 100 if model_normal > 0 else 0
+        normal = sum(climate[d["id"]]["rain"][t.month - 1] for t in m.t)
+        seasonal = {"months": [t.strftime("%Y-%m") for t in m.t], "rain_mm": round(normal * (1 + pct / 100)), "normal_mm": round(normal), "anomaly_pct": round(pct),
                     "rainOutlook": "below normal" if pct < -15 else "above normal" if pct > 15 else "near normal",
-                    "issued": date.today().isoformat(), "source": "Open-Meteo Seasonal Forecast API (ECMWF SEAS5 ensemble mean)"}
+                    "issued": date.today().isoformat(), "source": "Open-Meteo Seasonal Forecast API (ECMWF SEAS5), anomaly vs the model's own normal, applied to the NASA POWER normal"}
+        if d["id"] in out and out[d["id"]].get("future") and not out[d["id"]]["future"].get("borrowedFrom"):
+            out[d["id"]]["seasonal"] = seasonal  # projection already done: only refresh the outlook
+            print(f"{d['id']}: outlook {seasonal['rainOutlook']} ({seasonal['anomaly_pct']:+d} %)", flush=True)
+            continue
         # --- 2040s change, CMIP6 high-resolution models (heavy requests: stop after the first rate-limit refusal) ---
         deltas = []
         for m in ([] if limited[0] else MODELS):

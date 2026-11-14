@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import Simple from "./pages/Simple.jsx";
 import DataPage from "./pages/Data.jsx";
+import { useLang } from "./lib/i18n.jsx";
 import "./styles.css";
 import "./simple.css";
 import Gov from "./pages/Gov.jsx";
@@ -18,16 +19,30 @@ function Online() {
     window.addEventListener("online", up); window.addEventListener("offline", down);
     return () => { window.removeEventListener("online", up); window.removeEventListener("offline", down); };
   }, []);
-  return on ? null : <span className="chip warn">Offline: using saved data</span>;
+  const { t } = useLang();
+  const farmerSide = useLocation().pathname.startsWith("/farm");
+  return on ? null : <span className="chip warn">{farmerSide ? t.offline : "Offline: using saved data"}</span>;
+}
+
+function Footer() {
+  const { t } = useLang();
+  const farmerSide = useLocation().pathname === "/farm";
+  return (
+    <footer className="foot">
+      {farmerSide ? t.disclaimer : "Decision support only. It does not replace farmer judgment or the advice of agricultural officers."}{" "}
+      Data: NASA POWER, GPM IMERG, MODIS, SMAP, SRTM, SoilGrids, Open-Meteo, DCS, HARTI (<a href="/data">details</a>). Boundaries: geoBoundaries (ODbL), Natural Earth.
+    </footer>
+  );
 }
 
 // Farmers get their own link (/farm) with no government menu; the detailed farmer page keeps that plain header too.
 function Header() {
   const { pathname } = useLocation();
   const farmerSide = pathname.startsWith("/farm");
+  const { t } = useLang();
   return (
     <header className="top">
-      <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b>Field Shift</b><small>{farmerSide ? "Crop advice for your field" : "Sri Lanka · crop year 2021"}</small></div></div>
+      <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b>Field Shift</b><small>{farmerSide ? (pathname === "/farm" ? t.tagline : "Crop advice for your field") : "Sri Lanka · crop year 2021"}</small></div></div>
       {farmerSide ? (
         <nav>
           <NavLink to="/farm" end>Simple</NavLink>
@@ -63,10 +78,7 @@ function App() {
           <Route path="/outlook" element={<Outlook />} />
         </Routes>
       </main>
-      <footer className="foot">
-        Decision support only. It does not replace farmer judgment or the advice of agricultural officers.
-        Data: NASA POWER, GPM IMERG, MODIS, SMAP, SRTM, SoilGrids, Open-Meteo, DCS, HARTI (<a href="/data">details</a>). Boundaries: geoBoundaries (ODbL), Natural Earth.
-      </footer>
+      <Footer />
     </BrowserRouter>
   );
 }

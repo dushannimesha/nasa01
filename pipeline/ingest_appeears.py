@@ -22,6 +22,7 @@ import earthdata as ed  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data/raw/appeears"
 OUT = ROOT / "data/processed"
+MANUAL = ROOT / "data/manual/appeears"  # hand-downloaded result CSVs; point lists to upload are here too
 STEP = 0.005  # ~550 m between the SRTM cross points
 
 
@@ -89,25 +90,59 @@ def main():
             tasks[key] = submit(token, f"fieldshift-{key}", layers, coords, a, b)
             tasks_file.write_text(json.dumps(tasks, indent=1))
             print(f"submitted {key}: {len(coords)} points", flush=True)
-    files = {}
-    for key, tid in tasks.items():
-        ed.wait_task(token, tid)
-        files[key] = ed.download_task_csvs(token, tid, RAW / key)
-        print(f"downloaded {key}: {[f.name for f in files[key]]}", flush=True)
+    files = manual_files()
+    for key in sorted(tasks, key=["smap", "dem", "ndvi"].index):  # smallest first; each output is written as soon as it arrives
+        if key in files:
+            print(f"using your downloaded {key} files: {[f.name for f in files[key]]}", flush=True)
+        elif key == "dem" and (OUT / "terrain.csv").exists():
+            continue  # slope already made by pipeline/ingest_srtm.py
+        else:
+            ed.wait_task(token, tasks[key])
+            files[key] = ed.download_task_csvs(token, tasks[key], RAW / key)
+            print(f"downloaded {key}: {[f.name for f in files[key]]}", flush=True)
+        write_outputs({key: files[key]})
 
-    nd = pd.concat(pd.read_csv(f) for f in files["ndvi"])
+
+def manual_files():
+    """Result CSVs downloaded by hand from the AppEEARS website into data/manual/appeears/ (any file name)."""
+    found = {}
+    for f in sorted(MANUAL.glob("*.csv")) if MANUAL.exists() else []:
+        head = f.open(encoding="utf-8", errors="ignore").readline()
+        key = "ndvi" if "MOD13A3" in head else "smap" if "SPL4SMGP" in head else "dem" if "SRTMGL1" in head else None
+        if key:
+            found.setdefault(key, []).append(f)
+    return found
+
+
+def write_outputs(files):
+    if "ndvi" in files:
+        write_ndvi(files["ndvi"])
+    if "smap" in files:
+        write_smap(files["smap"])
+    if "dem" in files:
+        write_dem(files["dem"])
+
+
+def write_ndvi(paths):
+    nd = pd.concat(pd.read_csv(f) for f in paths)
     nd = nd.rename(columns={col(nd, "monthly_NDVI"): "ndvi"})
     nd = nd[(nd.ndvi > -0.2) & (nd.ndvi <= 1)]
     nd["district"], nd["date"] = nd.Category, pd.to_datetime(nd.Date).dt.strftime("%Y-%m-01")
     nd.groupby(["district", "date"]).ndvi.mean().round(4).reset_index().to_csv(OUT / "ndvi_monthly.csv", index=False)
+    print(f"ndvi_monthly.csv: {len(nd)} values, {nd.district.nunique()} districts, {nd.date.min()} to {nd.date.max()}")
 
-    sm = pd.concat(pd.read_csv(f) for f in files["smap"])
+
+def write_smap(paths):
+    sm = pd.concat(pd.read_csv(f) for f in paths)
     sm = sm.rename(columns={col(sm, "sm_rootzone"): "sm"})
     sm = sm[(sm.sm > 0) & (sm.sm < 1)]
     sm["district"], sm["date"] = sm.Category, pd.to_datetime(sm.Date).dt.strftime("%Y-%m-01")
     sm.groupby(["district", "date"]).sm.mean().round(4).rename("sm_rootzone").reset_index().to_csv(OUT / "smap_monthly.csv", index=False)
+    print(f"smap_monthly.csv: {len(sm)} values, {sm.district.nunique()} districts, {sm.date.min()} to {sm.date.max()}")
 
-    dm = pd.concat(pd.read_csv(f) for f in files["dem"])
+
+def write_dem(paths):
+    dm = pd.concat(pd.read_csv(f) for f in paths)
     dm = dm.rename(columns={col(dm, "SRTMGL1_DEM"): "z"})
     dm["pt"] = dm.ID.str.rsplit("_", n=1).str[0]
     dm["tag"] = dm.ID.str.rsplit("_", n=1).str[1]
@@ -118,7 +153,7 @@ def main():
     w["slope_pct"] = (((w.e - w.w) / dx) ** 2 + ((w.n - w.s) / dy) ** 2) ** 0.5 * 100
     terr = w.groupby("Category").agg(elev_m=("c", "median"), slope_pct=("slope_pct", "median")).round(1).reset_index().rename(columns={"Category": "district"})
     terr.to_csv(OUT / "terrain.csv", index=False)
-    print("ndvi rows", len(nd), "| smap rows", len(sm), "| terrain:", terr.set_index("district").slope_pct.to_dict())
+    print("terrain:", terr.set_index("district").slope_pct.to_dict())
 
 
 if __name__ == "__main__":
