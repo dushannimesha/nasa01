@@ -67,7 +67,9 @@ export default function Simple() {
       {shown && place && !res && <Loading />}
       {res && (
         <section className="s-results">
-          {pack.meta.sample && <p className="s-test">Test version: money figures are examples, not real yet.</p>}
+          {pack.meta.sample
+            ? <p className="s-test">Test version: money figures are examples, not real yet.</p>
+            : <p className="s-now">Money figures use 2021 farm-gate prices and typical costs. Your own prices and costs may differ.</p>}
           <h2>Best choices for {pack.name}</h2>
           {res.top.map((sim, i) => {
             const more = sim.annualProfit[1] - res.existing.annualProfit[1];

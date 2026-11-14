@@ -22,3 +22,5 @@ venv/
 # firebase
 .firebase/
 firebase-debug.log
+logs/
+models/artifacts/

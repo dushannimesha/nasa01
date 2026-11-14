@@ -1,0 +1,139 @@
+Commodity,Producing_Area,Range_Min,Range_Max,Average_Price
+Short Grain,A'pura,56.00,58.00,57.20
+Short Grain,P'naruwa,61.00,62.00,61.50
+Short Grain,Kalawewa,52.00,60.00,55.71
+Short Grain,Kurunegala,55.00,55.00,55.00
+Short Grain,Dehiattakandiya,53.00,53.00,53.00
+Short Grain,Nikaweratiya,,,
+Short Grain,Ampara,53.00,62.00,57.13
+Long Grain (White),A'pura,50.00,54.00,51.60
+Long Grain (White),P'naruwa,59.00,60.00,59.25
+Long Grain (White),Kalawewa,48.00,55.00,51.86
+Long Grain (White),Kurunegala,50.00,50.00,50.00
+Long Grain (White),Dehiattakandiya,50.00,50.00,50.00
+Long Grain (White),Embilipitiya,,,
+Long Grain (White),Nikaweratiya,,,
+Long Grain (White),Matara,,,
+Long Grain (White),Hambantota,,,
+Long Grain (White),Ampara,51.50,57.00,54.50
+Long Grain (Red),Matara,50.00,52.00,51.00
+Long Grain (Red),Hambantota,51.00,53.00,52.00
+Long Grain (Red),A'pura,,,
+Long Grain (Red),Embilipitiya,55.00,56.00,55.25
+Dried Chillies,A'pura,,,
+Dried Chillies,Kalawewa,,,
+Red Onion,Puttalam,145.00,180.00,161.00
+Red Onion,Jaffna,,,
+Big Onion,Dambulla,,,
+Big Onion,Kalawewa,,,
+Big Onion,A'pura,,,
+Potato,N'Eliya,190.00,198.00,194.80
+Potato,Badulla,150.00,160.00,154.00
+Potato,Welimada,160.00,165.00,163.00
+Green Gram,Hambantota,,,
+Green Gram,Moneragala,,,
+Green Gram,Embilipitiya,550.00,560.00,555.00
+Green Gram,Nikaweratiya,,,
+Green Gram,A'pura,400.00,420.00,408.00
+Cowpea,Hambantota,,,
+Cowpea,Nikaweratiya,,,
+Cowpea,Moneragala,,,
+Cowpea,Embilipitiya,520.00,530.00,525.00
+Maize,A'pura,75.00,80.00,77.00
+Maize,Kalawewa,48.00,75.00,60.75
+Gingelly,A'pura,,,
+Gingelly,Kalawewa,,,
+Black Gram,A'pura,,,
+Black Gram,Kalawewa,290.00,310.00,300.00
+Beans,Dambulla,,,
+Beans,Welimada,200.00,210.00,204.00
+Beans,Badulla,160.00,180.00,172.50
+Carrot,N'Eliya,70.00,75.00,72.00
+Carrot,Welimada,60.00,65.00,63.00
+Carrot,Hanguranketha,,,
+Leeks,N'Eliya,175.00,180.00,177.80
+Leeks,Welimada,160.00,165.00,163.00
+Beetroot,N'Eliya,50.00,60.00,55.00
+Beetroot,Dambulla,,,
+Beetroot,Kurunegala,,,
+Beetroot,Welimada,40.00,45.00,42.00
+Beetroot,Hanguranketha,,,
+Knol Khol,N'Eliya,35.00,40.00,37.00
+Knol Khol,Welimada,35.00,40.00,38.00
+Knol Khol,Hanguranketha,,,
+Raddish,N'Eliya,25.00,30.00,27.60
+Raddish,Welimada,20.00,25.00,22.00
+Raddish,Hambantota,,,
+Raddish,Hanguranketha,,,
+Cabbage,N'Eliya,115.00,120.00,116.80
+Cabbage,Welimada,85.00,90.00,87.00
+Cabbage,Badulla,80.00,100.00,88.00
+Cabbage,Hanguranketha,,,
+Tomato,Welimada,70.00,80.00,76.00
+Tomato,Hambantota,60.00,70.00,65.00
+Tomato,Dambulla,,,
+Tomato,Hanguranketha,,,
+Ladies Fingers,A'pura,60.00,70.00,64.00
+Ladies Fingers,Dambulla,,,
+Ladies Fingers,Hambantota,40.00,50.00,45.00
+Ladies Fingers,Embilipitiya,55.00,65.00,60.00
+Ladies Fingers,Matara,45.00,50.00,46.67
+Brinjal,A'pura,140.00,150.00,144.00
+Brinjal,Dambulla,,,
+Brinjal,Hambantota,100.00,120.00,110.00
+Brinjal,Embilipitiya,140.00,150.00,145.00
+Brinjal,Matara,,,
+Brinjal,Welimada,80.00,90.00,86.80
+Capsicum,Badulla,150.00,180.00,165.00
+Capsicum,Welimada,140.00,150.00,144.00
+Bitter Gourd,A'pura,70.00,80.00,74.00
+Bitter Gourd,Dambulla,,,
+Bitter Gourd,Hambantota,,,
+Bitter Gourd,Embilipitiya,150.00,210.00,180.00
+Bitter Gourd,Matara,,,
+Snake Gourd,Dambulla,,,
+Snake Gourd,Hambantota,50.00,60.00,56.67
+Snake Gourd,Embilipitiya,90.00,100.00,96.25
+Snake Gourd,Matara,,,
+Snake Gourd,A'pura,80.00,90.00,84.00
+Luffa,Dambulla,,,
+Luffa,Hambantota,,,
+Luffa,Embilipitiya,130.00,140.00,133.75
+Luffa,Matara,,,
+Luffa,A'pura,80.00,90.00,86.00
+Green Chillies,Dambulla,,,
+Green Chillies,Hambantota,,,
+Green Chillies,Embilipitiya,200.00,230.00,215.00
+Green Chillies,Puttalam,100.00,130.00,116.00
+Green Chillies,A'pura,140.00,160.00,152.00
+Pumpkin,Dambulla,,,
+Pumpkin,Hambantota,60.00,70.00,63.33
+Pumpkin,Embilipitiya,80.00,90.00,86.25
+Pumpkin,Matara,,,
+Pumpkin,A'pura,80.00,90.00,84.00
+Pumpkin,Moneragala,,,
+Cucumber,A'pura,30.00,35.00,32.00
+Cucumber,Dambulla,,,
+Cucumber,Hambantota,15.00,20.00,18.33
+Cucumber,Matara,30.00,35.00,32.50
+Long Beans,Dambulla,,,
+Long Beans,Hambantota,70.00,80.00,73.33
+Long Beans,Embilipitiya,100.00,120.00,107.50
+Long Beans,Matara,,,
+Long Beans,A'pura,90.00,100.00,94.00
+Ash Plantain,Hambantota,20.00,20.00,20.00
+Ash Plantain,Embilipitiya,15.00,25.00,21.00
+Ash Plantain,Matara,,,
+Lime,Hambantota,,,
+Lime,Embilipitiya,60.00,70.00,67.00
+Lime,Moneragala,,,
+Ambul,Moneragala,,,
+Ambul,Embilipitiya,10.00,20.00,17.00
+Ambul,Hambantota,30.00,40.00,35.00
+Kolikuttu,Moneragala,,,
+Kolikuttu,Embilipitiya,100.00,120.00,110.00
+Kolikuttu,Hambantota,120.00,120.00,120.00
+Papaw,Moneragala,,,
+Papaw,Embilipitiya,40.00,50.00,45.00
+Papaw,Hambantota,,,
+Pineapple,Divulapitiya,,,

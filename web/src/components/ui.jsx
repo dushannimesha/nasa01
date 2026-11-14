@@ -1,7 +1,17 @@
 import { CROP_COLORS } from "../lib/data.js";
 
 export function SampleBanner({ meta }) {
-  if (!meta?.sample) return meta?.dataAsOf ? <div className="asof">Data as of {meta.dataAsOf}</div> : null;
+  if (!meta?.sample) {
+    if (!meta?.real) return meta?.dataAsOf ? <div className="asof">Data as of {meta.dataAsOf}</div> : null;
+    return (
+      <details className="sources">
+        <summary>Data sources and assumptions · updated {meta.dataAsOf}</summary>
+        <p><b>From data:</b> {meta.real.join("; ")}.</p>
+        <p><b>Assumed (check locally):</b></p>
+        <ul>{meta.assumptions.map((a, i) => <li key={i}>{a}</li>)}</ul>
+      </details>
+    );
+  }
   if (meta.real?.length) return <div className="sample" role="note"><b>PARTLY SAMPLE DATA</b> Real so far: {meta.real.join("; ")}. Yields, areas, prices, costs and the 2021 test are still placeholders and must not be quoted.</div>;
   return <div className="sample" role="note"><b>SAMPLE DATA</b> These numbers are placeholders for building the interface. They are not model results and must not be quoted.</div>;
 }

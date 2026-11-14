@@ -125,7 +125,8 @@ export function planRotations(pack, cropList, existing, weights, o) {
   for (const maha of cropList) for (const yala of [...cropList, { id: "fallow" }]) all.push({ maha: maha.id, yala: yala.id });
   if (!all.some((r) => rotKey(r) === rotKey(existing))) all.push(existing);
   const sims = all.map((r) => simulateRotation(pack, crops, r, o));
-  const usable = sims.filter((s) => s.suit !== "fail" || rotKey(s.rot) === rotKey(existing));
+  // never recommend a rotation that fails on water or loses money in a normal year (the current rotation is always kept for comparison)
+  const usable = sims.filter((s) => (s.suit !== "fail" && s.annualProfit[1] >= 0) || rotKey(s.rot) === rotKey(existing));
   const scores = topsis(usable, weights);
   usable.forEach((s, i) => (s.score = scores[i]));
   const ranked = [...usable].sort((a, b) => b.score - a.score);
@@ -163,6 +164,11 @@ export function explain(sim, existing, pack, crops, o) {
   if (sim.dN > 2) benefits.push(`Soil nitrogen index rises by about ${Math.round(sim.dN)} kg/ha over five years.`);
   if (sim.rot.yala !== "fallow") benefits.push("A crop in Yala gives a second income and keeps the soil covered.");
   if (!same && sim.rot.yala !== "fallow") benefits.push("Two different crops spread the weather and price risk.");
+  for (const id of new Set(SEASONS.map((s) => sim.rot[s]))) {
+    const c = crops[id];
+    if (c?.marketRoomHa != null && id !== "paddy" && c.marketRoomHa < 0.25 * (c.nationalArea2021Ha || Infinity))
+      risks.push(`${c.name} has a small national market: about ${Math.round(c.marketRoomHa).toLocaleString()} more hectares across the country would push its price down 15 %. If many farmers switch, expect lower prices.`);
+  }
   if (same) risks.push("The same crop in both seasons lets pests and diseases of that crop build up.");
   if (sim.rot.yala === "fallow") risks.push("Bare soil in Yala loses nitrogen and organic matter and is open to erosion.");
   if (sim.annualProfit[0] < 0) risks.push(`In a poor year this rotation could lose money (low end ${lkr(sim.annualProfit[0])} per hectare per year).`);

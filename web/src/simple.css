@@ -49,3 +49,8 @@
 .s-saved { color: #006300; font-weight: 700; margin: 8px 0 0; }
 .s-now, .s-foot { color: var(--ink2); font-size: 0.95rem; margin: 0; }
 .s-adv { align-self: center; padding: 12px; color: var(--brand2); font-weight: 600; }
+
+/* data sources note (replaces the sample banner once real data is in) */
+.sources { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 0.85rem; color: var(--ink2); }
+.sources summary { color: var(--ink2); font-weight: 600; font-size: 0.85rem; }
+.sources p { margin: 8px 0 0; }

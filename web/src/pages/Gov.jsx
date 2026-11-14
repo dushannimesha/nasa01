@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useData, fmt, CROP_COLORS, INK, STATUS } from "../lib/data.js";
 import { computeNational, byId } from "../lib/model.js";
 import { usePlans } from "../lib/store.js";
@@ -23,16 +23,19 @@ export default function Gov() {
   const { base, now } = calc;
   const changed = JSON.stringify(w) !== JSON.stringify(ZERO);
   const dById = byId(national.districts);
+  // coverage: registered plan area against the district's cropped land (both seasons' areas / 2, approximate)
+  const regHa = plans.reduce((m, p) => ({ ...m, [p.districtId]: (m[p.districtId] || 0) + (Number(p.areaHa) || 0) }), {});
+  const coverage = (dd) => { const land = Object.values(dd.crops).reduce((t, c) => t + c.area_ha, 0) / 2; return land ? (100 * (regHa[dd.id] || 0)) / land : 0; };
 
   const METRICS = {
     yield: { label: `${cropsById[crop].name} yield (t/ha)`, get: (d) => now.byDistrict[d.id].crops[crop].yield, format: (v) => v.toFixed(1) },
     production: { label: `${cropsById[crop].name} production (t)`, get: (d) => now.byDistrict[d.id].crops[crop].production_t, format: fmt.t },
-    balance: { label: `${cropsById[crop].name} surplus (+) or deficit (−) against district consumption`, get: (d) => now.byDistrict[d.id].crops[crop].balance_t, format: fmt.t, diverging: true },
+    balance: { label: `${cropsById[crop].name} surplus (+) or deficit (âˆ’) against district consumption`, get: (d) => now.byDistrict[d.id].crops[crop].balance_t, format: fmt.t, diverging: true },
     fert: { label: "Nitrogen fertilizer need (t N)", get: (d) => now.byDistrict[d.id].fertN_t, format: fmt.t },
     stress: { label: "Yala water-stress index (0 = none, 1 = severe)", get: (d) => d.climate.water_stress, format: (v) => v.toFixed(2) },
     rain: { label: "Seasonal rain against normal (%)", get: (d) => d.climate.rain_anom_pct + w.rainPct, format: (v) => fmt.pct(v), diverging: true },
-    onset: { label: "Maha rain onset shift since 1982 (days; + is later, − is earlier)", get: (d) => d.climate.onset_shift_days, format: (v) => `${v > 0 ? "+" : ""}${Math.round(v)} d`, diverging: true },
-    coverage: { label: "Farm area registered in the app (%)", get: (d) => d.registered_pct, format: (v) => `${v} %` },
+    onset: { label: "Maha rain onset shift since 1982 (days; + is later, âˆ’ is earlier)", get: (d) => d.climate.onset_shift_days, format: (v) => `${v > 0 ? "+" : ""}${Math.round(v)} d`, diverging: true },
+    coverage: { label: "Farm area registered in the app (%)", get: (d) => coverage(d), format: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} %` },
   };
   const M = METRICS[metric];
   const values = Object.fromEntries(national.districts.map((d) => [d.id, M.get(d)]));
@@ -74,7 +77,7 @@ export default function Gov() {
         <Tile label="Paddy production" value={fmt.t(now.crops.paddy.production_t)} sub={changed ? `${fmt.pct((now.crops.paddy.production_t / base.crops.paddy.production_t - 1) * 100, 1)} against baseline` : `${fmt.int(now.crops.paddy.area_ha)} ha sown`} />
         <Tile label="Rice self-sufficiency" value={`${Math.round((now.crops.paddy.production_t / now.crops.paddy.need_t) * 100)} %`} sub={now.crops.paddy.balance_t >= 0 ? `Surplus ${fmt.t(now.crops.paddy.balance_t)}: store or export` : `Deficit ${fmt.t(-now.crops.paddy.balance_t)}: plan imports`} tone={now.crops.paddy.balance_t >= 0 ? "" : "bad"} />
         <Tile label="Nitrogen fertilizer need" value={fmt.t(now.fert.n)} sub={w.fertPct < 0 ? `Supply short by ${fmt.t(now.fert.n * (-w.fertPct / 100))}` : "At recommended rates (DoA)"} tone={w.fertPct < 0 ? "bad" : ""} />
-        <Tile label="Calories from these 6 crops" value={`${Math.round(now.kcalCoverage * 100)} %`} sub={`of national need · protein ${Math.round(now.proteinCoverage * 100)} %`} />
+        <Tile label="Calories from these 6 crops" value={`${Math.round(now.kcalCoverage * 100)} %`} sub={`of national need Â· protein ${Math.round(now.proteinCoverage * 100)} %`} />
         <Tile label="Plans registered" value={fmt.int(plans.length)} sub={`${fmt.int(liveArea)} ha entered through the app`} />
       </div>
 
@@ -101,7 +104,7 @@ export default function Gov() {
         <div className="stack">
           <Card title="What-if scenario" sub="Move a slider; the map, totals and charts update at once.">
             <Slider label="Seasonal rainfall" value={w.rainPct} min={-40} max={40} step={5} unit=" %" signed onChange={set("rainPct")} />
-            <Slider label="Temperature" value={w.tempC} min={0} max={3} step={0.5} unit=" °C" signed onChange={set("tempC")} />
+            <Slider label="Temperature" value={w.tempC} min={0} max={3} step={0.5} unit=" Â°C" signed onChange={set("tempC")} />
             <Slider label="Fertilizer supply" value={w.fertPct} min={-80} max={0} step={10} unit=" %" signed onChange={set("fertPct")} />
             <div className="row gap wrap">
               <label className="field"><span>Shift area from</span><select value={w.shiftFrom} onChange={(e) => set("shiftFrom")(e.target.value)}>{crops.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
@@ -111,12 +114,12 @@ export default function Gov() {
             <p className="note">Yield responses to rain, heat and fertilizer are per-district coefficients taken from the yield model. A scenario is an assumption, not a forecast.</p>
           </Card>
 
-          <Card title={d.name} sub={`${d.zone} zone · ${fmt.int(d.population)} people · ${d.registered_pct} % of farm area registered${d.registered_pct < 10 ? " (low coverage: treat plans as indicative)" : ""}`}>
+          <Card title={d.name} sub={`${d.zone} zone Â· ${fmt.int(d.population)} people Â· ${coverage(d).toFixed(2)} % of farm area registered${coverage(d) < 10 ? " (low coverage: treat plans as indicative)" : ""}`}>
             <table className="tbl">
               <thead><tr><th>Crop</th><th className="num">Area ha</th><th className="num">Yield t/ha</th><th className="num">Balance</th></tr></thead>
               <tbody>{crops.map((c) => { const x = dn.crops[c.id]; return (
                 <tr key={c.id}><td><CropDot id={c.id} />{c.name}</td><td className="num">{fmt.int(x.area_ha)}</td><td className="num">{x.yield.toFixed(2)}</td>
-                  <td className="num" style={{ color: x.balance_t < 0 ? STATUS.critical : INK.secondary }}>{x.balance_t < 0 ? "−" : "+"}{fmt.t(Math.abs(x.balance_t))}</td></tr>); })}</tbody>
+                  <td className="num" style={{ color: x.balance_t < 0 ? STATUS.critical : INK.secondary }}>{x.balance_t < 0 ? "âˆ’" : "+"}{fmt.t(Math.abs(x.balance_t))}</td></tr>); })}</tbody>
             </table>
             <p className="note">Season rain: Maha {d.climate.rain_maha_mm} mm, Yala {d.climate.rain_yala_mm} mm. Heat-stress days {d.climate.heat_days}. Maha onset {Math.abs(Math.round(d.climate.onset_shift_days))} days {d.climate.onset_shift_days >= 0 ? "later" : "earlier"} than in 1982. Nitrogen need {fmt.t(dn.fertN_t)}.</p>
           </Card>
@@ -127,7 +130,7 @@ export default function Gov() {
         <Card title="Surplus or deficit by crop" sub="Production minus national consumption, as a share of consumption. Blue: store or export. Red: plan imports.">
           <EChart option={balanceOpt} label="Surplus or deficit by crop" />
         </Card>
-        <Card title="Fertilizer need by nutrient" sub="Area × Department of Agriculture recommended rate, split by crop.">
+        <Card title="Fertilizer need by nutrient" sub="Area Ã— Department of Agriculture recommended rate, split by crop.">
           <EChart option={fertOpt} label="Fertilizer need by nutrient and crop" />
         </Card>
       </div>
@@ -137,7 +140,7 @@ export default function Gov() {
           <thead><tr><th>Crop</th><th className="num">Production</th><th className="num">Consumption</th><th className="num">Balance</th><th className="num">Price pressure</th><th>Suggested action</th></tr></thead>
           <tbody>{crops.map((c) => { const t = now.crops[c.id]; const share = t.balance_t / t.need_t; return (
             <tr key={c.id}><td><CropDot id={c.id} />{c.name}</td><td className="num">{fmt.t(t.production_t)}</td><td className="num">{fmt.t(t.need_t)}</td>
-              <td className="num" style={{ color: t.balance_t < 0 ? STATUS.critical : INK.secondary }}>{t.balance_t < 0 ? "−" : "+"}{fmt.t(Math.abs(t.balance_t))}</td>
+              <td className="num" style={{ color: t.balance_t < 0 ? STATUS.critical : INK.secondary }}>{t.balance_t < 0 ? "âˆ’" : "+"}{fmt.t(Math.abs(t.balance_t))}</td>
               <td className="num">{Math.abs(t.priceChangePct) < 0.5 ? "steady" : fmt.pct(t.priceChangePct, 0)}</td>
               <td>{share > 0.1 ? "Surplus: arrange storage or export; warn farmers of low prices" : share > -0.05 ? "Roughly balanced: hold buffer stock" : share > -0.4 ? "Deficit: schedule imports; encourage more area next season" : "Large deficit: import plan needed; strong case for incentives"}</td></tr>); })}</tbody>
         </table>

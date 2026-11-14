@@ -1,0 +1,100 @@
+Category,Commodity,Range_Min,Range_Max,Avg_Price_This_Week,Avg_Price_Last_Week,Avg_Price_Last_Year,Change_Last_Week_Pct,Change_Last_Year_Pct
+Local,Samba 1,150.00,150.00,150.00,,103.68,,44.68
+Local,Samba 2,130.00,140.00,138.57,,,,
+Local,Samba 3,,,,,,,
+Local,Nadu 1,125.00,125.00,125.00,,99.33,,25.84
+Local,Nadu 2,115.00,120.00,117.14,,,,
+Local,Raw (Red),100.00,110.00,101.00,,96.90,,4.23
+Local,Raw (White),110.00,110.00,110.00,,96.50,,13.99
+Imported,Samba,,,,,,,
+Imported,Nadu,,,,,,,
+Imported,Raw (Red),,,,,,,
+Imported,Raw (White),,,,,,,
+Dried Chillies,Imported,550.00,600.00,586.67,,512.00,,14.58
+Onion,Sinnan,240.00,300.00,278.18,,,,
+Onion,Vedalan,280.00,320.00,301.82,,202.69,,48.91
+Onion,Imported,300.00,320.00,304.00,,,,
+Big Onion,Imported,110.00,140.00,132.50,,130.38,,1.62
+Big Onion,Local,,,,,,,
+Potato,Welimada,,,,,,,
+Potato,N'Eliya,260.00,280.00,268.33,,210.67,,27.37
+Potato,Imported,180.00,200.00,198.33,,150.83,,31.49
+Pulses,Green Gram,800.00,900.00,862.50,,334.62,,157.76
+Pulses,Cowpea (White),700.00,800.00,750.00,,398.18,,88.36
+Pulses,Cowpea (Red),600.00,700.00,671.43,,386.21,,73.85
+Pulses,Red Dhal,250.00,260.00,251.54,,152.17,,65.30
+Vegetable,Beans (Butter),,,,,,,
+Vegetable,Beans(Green),200.00,280.00,240.00,,258.71,,-7.23
+Vegetable,Carrot,100.00,200.00,146.00,,181.00,,-19.34
+Vegetable,Leeks,200.00,280.00,242.00,,122.26,,97.94
+Vegetable,Beetroot,70.00,140.00,115.00,,153.21,,-24.94
+Vegetable,Knolkhol,100.00,200.00,160.00,,159.71,,0.18
+Vegetable,Raddish,70.00,160.00,113.00,,130.97,,-13.72
+Vegetable,Cabbage,120.00,240.00,183.00,,201.03,,-8.97
+Vegetable,Tomato,120.00,200.00,164.55,,129.06,,27.49
+Vegetable,Ladies Fingers,80.00,200.00,148.00,,137.24,,7.84
+Vegetable,Brinjal,200.00,240.00,220.00,,173.44,,26.85
+Vegetable,Capsicum,200.00,240.00,228.00,,354.38,,-35.66
+Vegetable,Pumpkin,130.00,200.00,181.00,,205.33,,-11.85
+Vegetable,Cucumber,50.00,120.00,92.73,,110.67,,-16.21
+Vegetable,Bitter Gourd,130.00,240.00,205.00,,259.68,,-21.06
+Vegetable,Snake Gourd,130.00,200.00,175.45,,158.89,,10.43
+Vegetable,Drumstick,180.00,360.00,272.73,,269.03,,1.37
+Vegetable,Luffa,120.00,240.00,198.00,,166.43,,18.97
+Vegetable,Long Beans,100.00,200.00,150.91,,148.15,,1.86
+Vegetable,Ash Plantain,60.00,120.00,100.91,,159.68,,-36.80
+Vegetable,Green Chillies,150.00,300.00,232.73,,257.50,,-9.62
+Vegetable,Lime,180.00,400.00,269.09,,230.00,,17.00
+Root Crops,Sweet Potato,100.00,160.00,132.00,,122.96,,7.35
+Root Crops,Manioc,60.00,100.00,79.00,,130.69,,-39.55
+Leafy Vegetable,Mukunuwenna,30.00,50.00,41.67,,40.50,,2.88
+Leafy Vegetable,Kankun,30.00,50.00,41.67,,41.50,,0.40
+Leafy Vegetable,Gotukola,30.00,60.00,47.22,,42.75,,10.46
+Coconut,Large,85.00,95.00,88.50,,80.16,,10.41
+Coconut,Small,65.00,80.00,74.58,,64.84,,15.03
+Plantain,Ambul (Rs/Kg),80.00,120.00,105.45,,147.75,,-28.63
+Plantain,Kolikuttu (Rs/Kg),240.00,260.00,246.36,,278.25,,-11.46
+Plantain,Seeni (Rs/Kg),120.00,150.00,132.73,,141.50,,-6.20
+Plantain,Anamalu,16.00,20.00,18.36,,21.53,,-14.70
+Plantain,Ambun,20.00,25.00,23.27,,26.53,,-12.28
+Plantain,Papaw(Rs/Kg),120.00,150.00,133.64,,150.59,,-11.26
+Plantain,Passion Fruit,22.00,25.00,23.18,,22.61,,2.52
+Plantain,Pineapple Large,220.00,250.00,235.45,,265.48,,-11.31
+Plantain,Pineapple Medium,160.00,200.00,182.73,,221.33,,-17.44
+Plantain,Pineapple Small,120.00,150.00,140.91,,164.84,,-14.52
+Mango,Betti,,,,,,,
+Mango,Karthakolomban,,,,,,,
+Mango,Vilad,,,,,90.00,,
+Mango,Kohu,,,,,,,
+Other,Wood Apple,40.00,70.00,59.09,,41.25,,43.25
+Other,Orange,40.00,70.00,56.36,,58.52,,-3.68
+Other,Avocado,70.00,100.00,87.27,,73.87,,18.14
+Other,Slime Apple,,,,,100.00,,
+Other,"Grapes (Imp., Rs/Kg)",1200.00,1500.00,1385.71,,937.50,,47.81
+Other,King Coconut,60.00,80.00,70.00,,71.82,,-2.53
+Sea Fish,Salaya,280.00,400.00,328.57,,318.46,,3.17
+Sea Fish,Hurulla,560.00,620.00,597.14,,462.22,,29.19
+Sea Fish,Balaya,800.00,1000.00,900.00,,712.31,,26.35
+Sea Fish,Kelawalla,1280.00,1300.00,1293.33,,1039.09,,24.47
+Sea Fish,Thora,1800.00,2600.00,2200.00,,1592.50,,38.15
+Sea Fish,Paraw,1000.00,1300.00,1128.57,,1185.26,,-4.78
+Sea Fish,Mora,900.00,1000.00,975.00,,,,
+Sea Fish,Shrimps (Small),1200.00,1500.00,1380.00,,1174.07,,17.54
+Sea Fish,Thalapath,1400.00,1600.00,1502.86,,1335.65,,12.52
+Eggs,Brown,,,,,23.45,,
+Eggs,White,,,,,22.54,,
+Dried Fish,Sprats,,,,,1215.00,,
+Dried Fish,Sprats (Imported),,,,,629.31,,
+Dried Fish,Kattawa,,,,,1436.36,,
+Dried Fish,Thora,,,,,1820.00,,
+Dried Fish,Mora,,,,,1255.00,,
+Dried Fish,Balaya,,,,,964.35,,
+Dried Fish,Anguluwa,,,,,1276.92,,
+Dried Fish,Maduwa,,,,,920.00,,
+Dried Fish,Koduwa,,,,,,,
+Dried Fish,Salaya,,,,,586.36,,
+Meat,Beef (without Bones),,,,,1060.00,,
+Meat,Chicken (Broiler),,,,,598.00,,
+Meat,Chicken (Curry),,,,,653.33,,
+Meat,Mutton,,,,,1883.33,,
+Meat,Pork,,,,,791.43,,
