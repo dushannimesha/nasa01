@@ -159,7 +159,18 @@ export function explain(sim, existing, pack, crops, o) {
     if (o.market && Math.abs(s.priceShift) >= 3) evidence.push(`${crops[s.cropId].name} price is expected ${s.priceShift < 0 ? "lower" : "higher"} by about ${Math.abs(Math.round(s.priceShift))} % because farmers in this district have registered ${s.priceShift < 0 ? "more" : "less"} area than usual.`);
     s.reasons.filter((r) => !r.startsWith("Temperature, season")).forEach((r) => risks.push(`${SEASON_LABEL[s.season]} ${crops[s.cropId].name}: ${r}`));
   }
-  evidence.push(`Soil: pH ${pack.soil.ph}, organic carbon ${pack.soil.soc_pct} %, ${pack.soil.texture} (SoilGrids). Slope about ${pack.slope_pct} %.`);
+  evidence.push(`Soil: pH ${pack.soil.ph}, organic carbon ${pack.soil.soc_pct} %, ${pack.soil.texture} (SoilGrids). Typical slope about ${pack.slope_pct} %${pack.satellite?.slope_pct != null ? " (NASA SRTM)" : ""}.`);
+  const sat = pack.satellite || {};
+  const tag = (s) => (s === "maha" ? "Maha 2020/21" : "Yala 2021");
+  for (const s of SEASONS) {
+    const bits = [];
+    if (sat.imerg_rain_2021?.[s] != null) bits.push(`rain ${sat.imerg_rain_2021[s] >= 0 ? "+" : ""}${Math.round(sat.imerg_rain_2021[s])} % against normal (NASA GPM IMERG)`);
+    if (sat.smap_anom_2021?.[s] != null) bits.push(`root-zone soil ${sat.smap_anom_2021[s] >= 0 ? "wetter" : "drier"} than 2016–2020 (NASA SMAP)`);
+    if (sat.ndvi_anom_2021?.[s] != null) bits.push(`vegetation ${sat.ndvi_anom_2021[s] >= 0 ? "greener" : "less green"} than normal (NASA MODIS NDVI)`);
+    if (bits.length) evidence.push(`${tag(s)} in this district: ${bits.join("; ")}.`);
+  }
+  const fut = pack.climate.future;
+  if (fut?.rainPct) risks.push(`Climate projections for the 2040s: Yala rain ${fut.rainPct.yala >= 0 ? "+" : ""}${fut.rainPct.yala} %, Maha rain ${fut.rainPct.maha >= 0 ? "+" : ""}${fut.rainPct.maha} %, about ${fut.tempC >= 0 ? "+" : ""}${fut.tempC} °C (CMIP6 models${fut.borrowedFrom ? `, nearest computed point: ${fut.borrowedFrom}` : ""}).`);
   if (legume) benefits.push("The legume fixes nitrogen from the air, so the next crop needs less urea.");
   if (sim.dN > 2) benefits.push(`Soil nitrogen index rises by about ${Math.round(sim.dN)} kg/ha over five years.`);
   if (sim.rot.yala !== "fallow") benefits.push("A crop in Yala gives a second income and keeps the soil covered.");

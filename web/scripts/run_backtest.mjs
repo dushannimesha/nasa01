@@ -131,6 +131,8 @@ const out = {
   }])),
   cvRmse: Object.fromEntries(Object.entries(R).map(([k, v]) => [k, Math.round(v.cv_rmse * 1000) / 1000])),
   bestModel: best,
+  featureSet: ym.featureSet,
+  ablation: ym.ablation || [],
   predVsActual: ym.predictions.map((p) => ({ id: p.district, name: packs.find((x) => x.id === p.district)?.name || p.district, season: p.season, actual: p.actual, predicted: p.predicted, interval: p.interval, reasons: p.reasons })),
   scenarios: [summarize(base, basePr, 0), ...levels.map((a) => summarize(runs[a].ev, runs[a].pr, a))],
   scenariosNoMarketRule: [summarize(base, basePr, 0), ...levels.map((a) => summarize(naive[a].ev, naive[a].pr, a))],

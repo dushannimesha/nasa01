@@ -91,6 +91,38 @@ def season_rows(did, df):
     return rows
 
 
+SEASON_MONTHS = {"maha": [(-1, 10), (-1, 11), (-1, 12), (0, 1), (0, 2), (0, 3)], "yala": [(0, m) for m in range(4, 10)]}
+
+
+def add_satellite(df):
+    """Adds satellite features when their files exist (each is optional):
+    imerg_rain_mm  GPM IMERG season rain (district mean, 0.1 deg)
+    ndvi_early     MODIS NDVI anomaly in the first 3 months of the season (vs the district-season 2001-2020 mean)
+    smap_anom      SMAP root-zone soil-moisture anomaly over the season (vs 2015-2020 mean), 2016 onwards only
+    """
+    def season_value(monthly, col, how, first_n=6):
+        m = monthly.assign(y=pd.to_datetime(monthly.date).dt.year, mo=pd.to_datetime(monthly.date).dt.month).set_index(["district", "y", "mo"])[col]
+        vals = []
+        for r in df.itertuples():
+            keys = [(r.district, r.year + dy, mo) for dy, mo in SEASON_MONTHS[r.season][:first_n]]
+            got = [m.get(k) for k in keys]
+            got = [g for g in got if g is not None and pd.notna(g)]
+            vals.append((sum(got) if how == "sum" else sum(got) / len(got)) if len(got) == len(keys) else np.nan)
+        return vals
+
+    for name, path, col, how, n in (("imerg_rain_mm", "imerg_monthly.csv", "rain_mm", "sum", 6), ("ndvi_early", "ndvi_monthly.csv", "ndvi", "mean", 3),
+                                   ("smap_anom", "smap_monthly.csv", "sm_rootzone", "mean", 6)):
+        if not (OUT / path).exists():
+            continue
+        df[name] = season_value(pd.read_csv(OUT / path), col, how, n)
+        if name != "imerg_rain_mm":  # anomaly against the district-season normal
+            ref = df[df.year <= 2020].groupby(["district", "season"])[name].transform("mean")
+            norm = df.assign(_r=ref).groupby(["district", "season"])._r.transform("max")
+            df[name] = df[name] - norm
+        print(f"added {name}: {df[name].notna().sum()} seasons", flush=True)
+    return df
+
+
 def main():
     (OUT / "daily").mkdir(parents=True, exist_ok=True)
     districts = [f["properties"] for f in json.loads((ROOT / "web/public/geo/districts.json").read_text(encoding="utf-8"))["features"]]
@@ -122,7 +154,7 @@ def main():
         }
         print(f"{d['id']:14s} Maha {summary[d['id']]['seasonRain']['maha']:5d} mm  Yala {summary[d['id']]['seasonRain']['yala']:5d} mm  "
               f"onset shift {summary[d['id']]['onset']['shiftDays']:+5.1f} d  2021 anomaly Maha {summary[d['id']]['rainAnom2021Pct']['maha']:+.0f}% Yala {summary[d['id']]['rainAnom2021Pct']['yala']:+.0f}%")
-    pd.DataFrame(rows).round(2).to_csv(OUT / "season_features.csv", index=False)
+    add_satellite(pd.DataFrame(rows)).round(4).to_csv(OUT / "season_features.csv", index=False)
     (OUT / "climate_summary.json").write_text(json.dumps({"source": "NASA POWER daily (AG community), one point per district", "normalPeriod": NORMAL, "districts": summary}))
     print(f"season_features.csv: {len(rows)} rows")
 

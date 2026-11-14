@@ -53,7 +53,8 @@ export default function Farmer() {
             <LocationPicker geo={geo} onPick={(id, pos) => { setDistrictId(id); setMarker(pos); setSaved(null); }} />
             <DistrictMap geo={geo} selected={districtId} marker={marker} height={300} overlayControls={false}
               onSelect={(id, latlng) => { setDistrictId(id); setMarker(latlng); setSaved(null); }} />
-            <p className="note">Soil here: pH {pack.soil.ph}, organic carbon {pack.soil.soc_pct} %, {pack.soil.texture}. Rain: Maha {pack.climate.seasonRain.maha} mm, Yala {pack.climate.seasonRain.yala} mm.</p>
+            <p className="note">Soil here: pH {pack.soil.ph}, organic carbon {pack.soil.soc_pct} %, {pack.soil.texture}. Rain: Maha {pack.climate.seasonRain.maha} mm, Yala {pack.climate.seasonRain.yala} mm.
+              {pack.climate.seasonal?.issued && <> Next 3 months ({pack.climate.seasonal.months?.join(", ")}): rain {pack.climate.seasonal.rainOutlook} ({pack.climate.seasonal.anomaly_pct > 0 ? "+" : ""}{pack.climate.seasonal.anomaly_pct} %, seasonal forecast issued {pack.climate.seasonal.issued}).</>}</p>
           </Card>
           <Card title="2. Your field">
             <div className="row gap wrap">

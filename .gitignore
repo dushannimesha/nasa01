@@ -24,3 +24,5 @@ venv/
 firebase-debug.log
 logs/
 models/artifacts/
+.netrc
+_netrc

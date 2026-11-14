@@ -2,6 +2,7 @@
 import { useData, fmt, INK, CROP_COLORS } from "../lib/data.js";
 import { byId } from "../lib/model.js";
 import DistrictMap from "../components/DistrictMap.jsx";
+import { AblationChart, AblationTable } from "./Data.jsx";
 import EChart, { axis } from "../components/EChart.jsx";
 import { SampleBanner, Tile, Card, Loading, CropDot } from "../components/ui.jsx";
 
@@ -22,7 +23,7 @@ export default function Backtest() {
     xAxis: axis({ type: "value", name: "Actual yield 2021 (t/ha, DCS)", nameLocation: "middle", nameGap: 26, scale: true, nameTextStyle: { color: INK.muted, fontSize: 11 } }),
     yAxis: axis({ type: "value", name: "Predicted (t/ha)", scale: true }),
     tooltip: { trigger: "item", formatter: (p) => { const r = bt.predVsActual.find((x) => x.name === p.data[2] && x.season === (p.seriesIndex === 0 ? "maha" : "yala"));
-      return `<b>${p.data[2]}</b> Â· ${p.seriesName}<br/>Actual ${p.data[0]} t/ha<br/>Predicted ${p.data[1]} t/ha${r?.interval ? ` (80 %: ${r.interval[0]}â€“${r.interval[1]})` : ""}${r?.reasons ? "<br/>" + r.reasons.map((x) => `${x.feature} ${x.effect_t_ha > 0 ? "+" : ""}${x.effect_t_ha}`).join("<br/>") : ""}`; } },
+      return `<b>${p.data[2]}</b> · ${p.seriesName}<br/>Actual ${p.data[0]} t/ha<br/>Predicted ${p.data[1]} t/ha${r?.interval ? ` (80 %: ${r.interval[0]}–${r.interval[1]})` : ""}${r?.reasons ? "<br/>" + r.reasons.map((x) => `${x.feature} ${x.effect_t_ha > 0 ? "+" : ""}${x.effect_t_ha}`).join("<br/>") : ""}`; } },
     series: [["maha", "Maha 2020/21", "#2a78d6", "circle"], ["yala", "Yala 2021", "#eb6834", "diamond"]].map(([s, name, color, symbol], i) => ({
       name, type: "scatter", symbol, symbolSize: 9, itemStyle: { color, borderColor: INK.surface, borderWidth: 1 },
       data: bt.predVsActual.filter((r) => r.season === s).map((r) => [r.actual, r.predicted, r.name]),
@@ -50,9 +51,9 @@ export default function Backtest() {
           <div className="tiles small">
             {["maha", "yala"].map((s) => { const e = bt.modelError[s]; return (
               <Tile key={s} label={`${s === "maha" ? "Maha 2020/21" : "Yala 2021"} error (RMSE)`} value={`${e.rmse} t/ha`}
-                sub={`RÂ² ${e.r2} Â· simple guesses: last year ${e.baselineRmse}, 3-year average ${e.baseline3Rmse}`} tone={e.baseline3Rmse != null && e.rmse > e.baseline3Rmse ? "bad" : ""} />); })}
+                sub={`R² ${e.r2} · simple guesses: last year ${e.baselineRmse}, 3-year average ${e.baseline3Rmse}`} tone={e.baseline3Rmse != null && e.rmse > e.baseline3Rmse ? "bad" : ""} />); })}
           </div>
-          {bt.cvRmse && <p className="note">Model chosen: {bt.bestModel}. Error when each year 2011â€“2020 is predicted only from earlier years: {Object.entries(bt.cvRmse).sort((a, b) => a[1] - b[1]).map(([k, v]) => `${k} ${v}`).join(" Â· ")} t/ha.
+          {bt.cvRmse && <p className="note">Model chosen: {bt.bestModel}. Error when each year 2011–2020 is predicted only from earlier years: {Object.entries(bt.cvRmse).sort((a, b) => a[1] - b[1]).map(([k, v]) => `${k} ${v}`).join(" · ")} t/ha.
             {bt.modelError.yala.rmse > bt.modelError.yala.baseline3Rmse && " In Yala 2021 the model did slightly worse than the 3-year average."}</p>}
           <EChart option={scatter} height={280} label="Predicted against actual paddy yield, 2021" />
         </Card>
@@ -63,6 +64,15 @@ export default function Backtest() {
         </Card>
       </div>
 
+      {bt.ablation?.length > 0 && (
+        <Card title="What each dataset adds" sub="The same models trained on 2002–2020 with more and more data. Lower error is better. The combination is chosen on the 2011–2020 check; 2021 stays a held-out test.">
+          <div className="grid two">
+            <AblationChart rows={bt.ablation} />
+            <div><AblationTable rows={bt.ablation} chosen={bt.featureSet} /><p className="note">Full list of datasets and where each is used: <a href="/data">Data used</a>.</p></div>
+          </div>
+        </Card>
+      )}
+
       <Card title="Step 2: what would have changed?" sub="Choose the share of farm area that follows the app's top recommendation.">
         <div className="seg" role="group" aria-label="Adoption">{[10, 30, 50].map((a) => <button key={a} className={adopt === a ? "on" : ""} onClick={() => setAdopt(a)}>{a} % of area</button>)}</div>
         <div className="grid two">
@@ -70,7 +80,7 @@ export default function Backtest() {
             <table className="tbl"><thead><tr><th>National, crop year 2021</th><th className="num">Without app (actual)</th><th className="num">With app (simulated)</th><th className="num">Change</th></tr></thead>
               <tbody>
                 <Row label="Farm income, 6 crops" a={base.income_lkr_bn} b={sc.income_lkr_bn} unit="bn LKR" />
-                <Row label="Irrigation water needed" a={base.water_mcm} b={sc.water_mcm} unit="M mÂ³" lowerBetter />
+                <Row label="Irrigation water needed" a={base.water_mcm} b={sc.water_mcm} unit="M m³" lowerBetter />
                 <Row label="Nitrogen fertilizer need" a={base.fertN_t} b={sc.fertN_t} unit="t" lowerBetter />
                 <Row label="Land left bare in Yala" a={base.bareFallow_ha} b={sc.bareFallow_ha} unit="ha" lowerBetter />
               </tbody></table>

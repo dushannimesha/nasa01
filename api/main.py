@@ -98,16 +98,11 @@ def paddy_yield(district: str, season: str, year: int = 2021, rain_pct: float = 
     x = row[art["features"]].copy()
     p0 = float(art["model"].predict(x)[0])
     if rain_pct or temp_c:  # what-if: same adjustments as the model's sensitivity check
-        k = 1 + rain_pct / 100
-        x["water_balance_mm"] = x.water_balance_mm + (k - 1) * x.rain_mm
-        x["rain_mm"] = x.rain_mm * k
-        x["wb_ratio"] = np.clip(x.wb_ratio * (1 + rain_pct / 200), 0, 1)
-        x["tmax_mean"] += temp_c
-        x["tmin_mean"] += temp_c
-        x["et0_mm"] *= 1 + 0.04 * temp_c
+        import yield_ml
+        x = yield_ml.what_if(x, rain_pct, temp_c)
     p = float(art["model"].predict(x)[0])
     actual = row.yield_t_ha.iloc[0]
-    return {"district": district, "season": season, "year": year, "model": art["name"], "predicted_t_ha": round(p, 2),
+    return {"district": district, "season": season, "year": year, "model": art["name"], "inputs": art.get("set"), "predicted_t_ha": round(p, 2),
             "interval80_t_ha": [round(p + art["q10"], 2), round(p + art["q90"], 2)], "baseline_t_ha": round(p0, 2),
             "whatIf": {"rain_pct": rain_pct, "temp_c": temp_c}, "actual_t_ha": None if np.isnan(actual) else round(float(actual), 2)}
 

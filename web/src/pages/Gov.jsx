@@ -13,6 +13,7 @@ export default function Gov() {
   const [w, setW] = useState(ZERO);
   const [metric, setMetric] = useState("yield");
   const [crop, setCrop] = useState("paddy");
+  const [season, setSeason] = useState("maha");
   const [sel, setSel] = useState("anuradhapura");
   const { plans } = usePlans();
 
@@ -36,6 +37,10 @@ export default function Gov() {
     rain: { label: "Seasonal rain against normal (%)", get: (d) => d.climate.rain_anom_pct + w.rainPct, format: (v) => fmt.pct(v), diverging: true },
     onset: { label: "Maha rain onset shift since 1982 (days; + is later, âˆ’ is earlier)", get: (d) => d.climate.onset_shift_days, format: (v) => `${v > 0 ? "+" : ""}${Math.round(v)} d`, diverging: true },
     coverage: { label: "Farm area registered in the app (%)", get: (d) => coverage(d), format: (v) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)} %` },
+    imerg: { label: `Rain in ${season === "maha" ? "Maha 2020/21" : "Yala 2021"} against 2001–2020 normal (%, GPM IMERG)`, get: (d) => d.sat?.imerg_rain_2021?.[season], format: (v) => fmt.pct(v), diverging: true },
+    ndvi: { label: `Greenness in ${season === "maha" ? "Maha 2020/21" : "Yala 2021"} against normal (NDVI change, MODIS)`, get: (d) => d.sat?.ndvi_anom_2021?.[season], format: (v) => `${v > 0 ? "+" : ""}${v.toFixed(3)}`, diverging: true },
+    smap: { label: `Root-zone soil moisture in ${season === "maha" ? "Maha 2020/21" : "Yala 2021"} against 2016–2020 (m³/m³, SMAP)`, get: (d) => d.sat?.smap_anom_2021?.[season], format: (v) => `${v > 0 ? "+" : ""}${v.toFixed(3)}`, diverging: true },
+    slope: { label: "Typical slope (%, SRTM)", get: (d) => d.sat?.slope_pct, format: (v) => `${v.toFixed(1)} %` },
   };
   const M = METRICS[metric];
   const values = Object.fromEntries(national.districts.map((d) => [d.id, M.get(d)]));
@@ -77,7 +82,7 @@ export default function Gov() {
         <Tile label="Paddy production" value={fmt.t(now.crops.paddy.production_t)} sub={changed ? `${fmt.pct((now.crops.paddy.production_t / base.crops.paddy.production_t - 1) * 100, 1)} against baseline` : `${fmt.int(now.crops.paddy.area_ha)} ha sown`} />
         <Tile label="Rice self-sufficiency" value={`${Math.round((now.crops.paddy.production_t / now.crops.paddy.need_t) * 100)} %`} sub={now.crops.paddy.balance_t >= 0 ? `Surplus ${fmt.t(now.crops.paddy.balance_t)}: store or export` : `Deficit ${fmt.t(-now.crops.paddy.balance_t)}: plan imports`} tone={now.crops.paddy.balance_t >= 0 ? "" : "bad"} />
         <Tile label="Nitrogen fertilizer need" value={fmt.t(now.fert.n)} sub={w.fertPct < 0 ? `Supply short by ${fmt.t(now.fert.n * (-w.fertPct / 100))}` : "At recommended rates (DoA)"} tone={w.fertPct < 0 ? "bad" : ""} />
-        <Tile label="Calories from these 6 crops" value={`${Math.round(now.kcalCoverage * 100)} %`} sub={`of national need Â· protein ${Math.round(now.proteinCoverage * 100)} %`} />
+        <Tile label="Calories from these 6 crops" value={`${Math.round(now.kcalCoverage * 100)} %`} sub={`of national need · protein ${Math.round(now.proteinCoverage * 100)} %`} />
         <Tile label="Plans registered" value={fmt.int(plans.length)} sub={`${fmt.int(liveArea)} ha entered through the app`} />
       </div>
 
@@ -89,8 +94,19 @@ export default function Gov() {
                 <option value="yield">Predicted yield</option><option value="production">Production</option><option value="balance">Surplus / deficit</option>
                 <option value="fert">Fertilizer need</option><option value="stress">Water stress</option><option value="rain">Rain against normal</option>
                 <option value="onset">Rain-onset shift</option><option value="coverage">App coverage</option>
+                <optgroup label="Satellite, 2021">
+                  {national.districts.some((x) => x.sat?.imerg_rain_2021) && <option value="imerg">Rain (GPM IMERG)</option>}
+                  {national.districts.some((x) => x.sat?.ndvi_anom_2021) && <option value="ndvi">Greenness (MODIS NDVI)</option>}
+                  {national.districts.some((x) => x.sat?.smap_anom_2021) && <option value="smap">Soil moisture (SMAP)</option>}
+                  {national.districts.some((x) => x.sat?.slope_pct != null) && <option value="slope">Slope (SRTM)</option>}
+                </optgroup>
               </select>
             </label>
+            {["imerg", "ndvi", "smap"].includes(metric) && (
+              <label className="field"><span>Season</span>
+                <select value={season} onChange={(e) => setSeason(e.target.value)}><option value="maha">Maha 2020/21</option><option value="yala">Yala 2021</option></select>
+              </label>
+            )}
             {["yield", "production", "balance"].includes(metric) && (
               <label className="field"><span>Crop</span>
                 <select value={crop} onChange={(e) => setCrop(e.target.value)}>{crops.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
@@ -104,7 +120,7 @@ export default function Gov() {
         <div className="stack">
           <Card title="What-if scenario" sub="Move a slider; the map, totals and charts update at once.">
             <Slider label="Seasonal rainfall" value={w.rainPct} min={-40} max={40} step={5} unit=" %" signed onChange={set("rainPct")} />
-            <Slider label="Temperature" value={w.tempC} min={0} max={3} step={0.5} unit=" Â°C" signed onChange={set("tempC")} />
+            <Slider label="Temperature" value={w.tempC} min={0} max={3} step={0.5} unit=" °C" signed onChange={set("tempC")} />
             <Slider label="Fertilizer supply" value={w.fertPct} min={-80} max={0} step={10} unit=" %" signed onChange={set("fertPct")} />
             <div className="row gap wrap">
               <label className="field"><span>Shift area from</span><select value={w.shiftFrom} onChange={(e) => set("shiftFrom")(e.target.value)}>{crops.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
@@ -114,7 +130,7 @@ export default function Gov() {
             <p className="note">Yield responses to rain, heat and fertilizer are per-district coefficients taken from the yield model. A scenario is an assumption, not a forecast.</p>
           </Card>
 
-          <Card title={d.name} sub={`${d.zone} zone Â· ${fmt.int(d.population)} people Â· ${coverage(d).toFixed(2)} % of farm area registered${coverage(d) < 10 ? " (low coverage: treat plans as indicative)" : ""}`}>
+          <Card title={d.name} sub={`${d.zone} zone · ${fmt.int(d.population)} people · ${coverage(d).toFixed(2)} % of farm area registered${coverage(d) < 10 ? " (low coverage: treat plans as indicative)" : ""}`}>
             <table className="tbl">
               <thead><tr><th>Crop</th><th className="num">Area ha</th><th className="num">Yield t/ha</th><th className="num">Balance</th></tr></thead>
               <tbody>{crops.map((c) => { const x = dn.crops[c.id]; return (
@@ -130,7 +146,7 @@ export default function Gov() {
         <Card title="Surplus or deficit by crop" sub="Production minus national consumption, as a share of consumption. Blue: store or export. Red: plan imports.">
           <EChart option={balanceOpt} label="Surplus or deficit by crop" />
         </Card>
-        <Card title="Fertilizer need by nutrient" sub="Area Ã— Department of Agriculture recommended rate, split by crop.">
+        <Card title="Fertilizer need by nutrient" sub="Area × Department of Agriculture recommended rate, split by crop.">
           <EChart option={fertOpt} label="Fertilizer need by nutrient and crop" />
         </Card>
       </div>
