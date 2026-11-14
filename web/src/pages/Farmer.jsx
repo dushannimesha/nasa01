@@ -5,7 +5,8 @@ import { savePlan } from "../lib/store.js";
 import DistrictMap from "../components/DistrictMap.jsx";
 import LocationPicker from "../components/LocationPicker.jsx";
 import EChart, { axis } from "../components/EChart.jsx";
-import { SampleBanner, Card, Slider, Loading, Suit, CropDot } from "../components/ui.jsx";
+import { SampleBanner, Card, Slider, Loading, Suit, CropDot, LevelIcon } from "../components/ui.jsx";
+import { ArrowLeft } from "lucide-react";
 
 const LINE = ["#2a78d6", "#eb6834", "#1baf7a", "#898781"];
 const WATER = { rain: "Rain only", tank: "Tank / canal", well: "Agro-well" };
@@ -45,7 +46,7 @@ export default function Farmer() {
   return (
     <div className="page">
       <SampleBanner meta={pack.meta} />
-      <div className="page-head"><div><h1>Plan my field: detailed view</h1><p>Find your field by GPS, by name or on the map, tell us what matters to you, and compare rotations for {pack.name}.</p></div><a className="btn ghost" href="/farm">← Simple view</a></div>
+      <div className="page-head"><div><h1>Plan my field: detailed view</h1><p>Find your field by GPS, by name or on the map, tell us what matters to you, and compare rotations for {pack.name}.</p></div><a className="btn ghost" href="/farm"><ArrowLeft size={16} aria-hidden="true" /> Simple view</a></div>
 
       <div className="grid one-two">
         <div className="stack">
@@ -224,7 +225,6 @@ function Monitor({ pack, cropList, marker }) {
       ],
     };
   }
-  const ICON = { good: "✓", info: "i", warning: "!", serious: "!", critical: "!" };
   return (
     <>
       <Card title="What I planted">
@@ -237,7 +237,7 @@ function Monitor({ pack, cropList, marker }) {
         <div className="stagebar">{c.stages.map((st) => <div key={st.name} style={{ flex: st.days }} className={st === g.stage && !g.done && g.day >= 0 ? "on" : ""}><span>{st.name}</span></div>)}</div>
         {err && <p className="note">{err}</p>}
         {!wx && !err && <p className="note">Loading the 14-day forecast…</p>}
-        <ul className="actions">{actions.map(([lvl, text], k) => <li key={k} className={lvl}><i>{ICON[lvl]}</i>{text}</li>)}</ul>
+        <ul className="actions">{actions.map(([lvl, text], k) => <li key={k} className={lvl}><LevelIcon level={lvl} size={20} />{text}</li>)}</ul>
       </Card>
       {chart && <Card title="Rain and crop water use" sub="Last 14 days and next 14 days. Weather: Open-Meteo forecast (not NASA). Crop water use = reference evapotranspiration × crop factor (FAO-56).">
         <EChart option={chart} height={240} label="Daily rain and crop water use" /></Card>}

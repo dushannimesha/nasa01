@@ -27,7 +27,19 @@
 .s-choices.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .s-choices button { min-width: 0; overflow-wrap: anywhere; }
 .s-choices button { font: inherit; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 6px; min-height: 84px; border: 2px solid var(--line); border-radius: 14px; background: #fff; color: var(--ink); cursor: pointer; }
-.s-choices i { font-style: normal; font-size: 1.7rem; line-height: 1; }
+.s-choices i { font-style: normal; line-height: 1; color: var(--brand2); display: grid; place-items: center; }
+.s-choices button.on i { color: var(--brand); }
+.s-picked b { display: inline-flex; align-items: center; gap: 6px; }
+.s-picked .pin { flex: none; color: var(--brand); }
+.s-care { display: flex; gap: 8px; align-items: flex-start; }
+.s-care .warn-ico { flex: none; color: #b26b00; margin-top: 2px; }
+.s-saved { display: flex; gap: 8px; align-items: center; }
+.s-arrow { display: grid; place-items: center; }
+.s-adv { display: inline-flex; align-items: center; gap: 6px; }
+.locpick .gps { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
 .s-choices button.on { border-color: var(--brand); background: var(--wash); box-shadow: inset 0 0 0 1px var(--brand); }
 .s-go, .s-pick { font: inherit; font-weight: 700; border: 0; cursor: pointer; color: #fff; background: var(--brand); border-radius: 16px; }
 .s-go { font-size: 1.35rem; padding: 20px; background: #0a7a0a; box-shadow: 0 4px 14px rgba(10, 122, 10, 0.35); }

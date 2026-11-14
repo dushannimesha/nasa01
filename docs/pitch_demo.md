@@ -1,9 +1,9 @@
 # Field Shift: 3-minute demo script
 
-Live site: https://nasa01-c2bd2.web.app · Farmer link: https://nasa01-c2bd2.web.app/farm · Telegram: @agro01bot
+Live site: https://nasa01-c2bd2.web.app · Farmer link: https://nasa01-c2bd2.web.app/farm · 2021 report: https://nasa01-c2bd2.web.app/2021 · Telegram: @agro01bot
 
 **Before you start**
-- Open the four tabs in this order: `/farm`, `/` (dashboard), `/backtest`, `/data`.
+- Open the four tabs in this order: `/farm`, `/` (dashboard), `/2021` (the separate evaluation report), `/data`.
 - On `/farm`, press English and clear the place, so the demo starts fresh.
 - Have a phone ready with the farmer link open, to hold up during part 1.
 - The site works offline once opened. If the venue Wi-Fi drops, keep going.
@@ -18,7 +18,7 @@ Live site: https://nasa01-c2bd2.web.app · Farmer link: https://nasa01-c2bd2.web
    > "Farmers use it in their own language."
 
    Switch back to English.
-2. Tap **📍 Use my location**, or type *Anuradhapura*.
+2. Tap **Use my location**, or type *Anuradhapura*.
    > "No sign-up. GPS, or type a village name."
 3. Leave **Tank or canal** and **More income** selected. Tap **Show my best crops**.
 4. Point at the top card: Maha green chilli, then Yala cowpea, with the money range.
@@ -36,14 +36,14 @@ Live site: https://nasa01-c2bd2.web.app · Farmer link: https://nasa01-c2bd2.web
 3. Switch the map to **Rain 2021 (GPM IMERG)** or **Slope (SRTM)**.
    > "District layers come straight from NASA satellites."
 
-## 1:50–2:40 · Proof: the 2021 test (`/backtest`)
+## 1:50–2:40 · Proof: the 2021 test (`/2021`, separate report link)
 > "We trained only on data up to 2020, then checked 2021, a year the model never saw."
 
-1. Point at the error tiles: paddy yield error is about **0.43–0.50 t/ha**.
-2. In the with/without table, choose **30 % of area**:
+1. The headline tiles at the top, with **30 % of farm area** selected:
    - Farm income: **151.2 → 157.2 bn LKR (+4 %)**
    - Irrigation water: **5,740 → 5,647 million m³ (−1.6 %)**
    - Nitrogen fertilizer: **136,475 → 135,863 t**
+   - Yield model error on 2021: **about 0.5 t/ha**
    > "And this is with a market check. Without it, everyone would rush into chilli and cowpea and crash their prices by 75 %. The app stops recommending a crop once its national price would fall more than 15 %."
 
 ## 2:40–3:00 · NASA data (`/data`)
@@ -61,7 +61,7 @@ Live site: https://nasa01-c2bd2.web.app · Farmer link: https://nasa01-c2bd2.web
 - **"Did the satellite rain improve the model?"**
   On 2011–2020 validation, yes: IMERG gave the lowest error (0.508 t/ha, against 0.514 for history only). On 2021 itself, history alone was slightly better (0.434 against 0.498 for Maha). We show this openly on the Data page. IMERG's main gain is separating hill districts that NASA POWER's 50 km grid treats as one.
 - **"Is the 'with app' result real?"**
-  It's a simulation on 2021 data: real 2021 areas, yields, weather and prices, with farmers switching under stated rules. The assumptions are listed on the 2021 test page.
+  It's a simulation on 2021 data: real 2021 areas, yields, weather and prices, with farmers switching under stated rules. The assumptions are listed at the bottom of the 2021 report.
 - **"What about farmers without smartphones?"**
   - The Telegram bot gives the same answers in text.
   - Officers can enter plans on the Officer desk.

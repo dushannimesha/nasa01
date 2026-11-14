@@ -1,13 +1,15 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, NavLink, Route, Routes, useLocation } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import Simple from "./pages/Simple.jsx";
 import DataPage from "./pages/Data.jsx";
 import { useLang } from "./lib/i18n.jsx";
 import "./styles.css";
 import "./simple.css";
 import Gov from "./pages/Gov.jsx";
-import Backtest from "./pages/Backtest.jsx";
+// The 2021 evaluation report is a separate page with its own link (/2021), loaded only when asked for.
+const Backtest = React.lazy(() => import("./pages/Backtest.jsx"));
 import Farmer from "./pages/Farmer.jsx";
 import Officer from "./pages/Officer.jsx";
 import Outlook from "./pages/Outlook.jsx";
@@ -40,6 +42,12 @@ function Header() {
   const { pathname } = useLocation();
   const farmerSide = pathname.startsWith("/farm");
   const { t } = useLang();
+  if (pathname === "/2021") return (
+    <header className="top">
+      <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b>Field Shift</b><small>Evaluation report · crop year 2021</small></div></div>
+      <nav><a href="/">Open the app <ExternalLink size={14} aria-hidden="true" /></a></nav>
+    </header>
+  );
   return (
     <header className="top">
       <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b>Field Shift</b><small>{farmerSide ? (pathname === "/farm" ? t.tagline : "Crop advice for your field") : "Sri Lanka · crop year 2021"}</small></div></div>
@@ -51,11 +59,10 @@ function Header() {
       ) : (
         <nav>
           <NavLink to="/" end>National dashboard</NavLink>
-          <NavLink to="/backtest">2021 test</NavLink>
           <NavLink to="/officer">Officer</NavLink>
           <NavLink to="/outlook">Harvest outlook</NavLink>
           <NavLink to="/data">Data used</NavLink>
-          <NavLink to="/farm">Farmer app ↗</NavLink>
+          <NavLink to="/farm">Farmer app <ExternalLink size={14} aria-hidden="true" /></NavLink>
         </nav>
       )}
       <Online />
@@ -72,7 +79,8 @@ function App() {
           <Route path="/farm" element={<Simple />} />
           <Route path="/data" element={<DataPage />} />
           <Route path="/" element={<Gov />} />
-          <Route path="/backtest" element={<Backtest />} />
+          <Route path="/2021" element={<React.Suspense fallback={<div className="loading">Loading the report…</div>}><Backtest /></React.Suspense>} />
+          <Route path="/backtest" element={<Navigate to="/2021" replace />} />
           <Route path="/farmer" element={<Farmer />} />
           <Route path="/officer" element={<Officer />} />
           <Route path="/outlook" element={<Outlook />} />

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { LoaderCircle, LocateFixed } from "lucide-react";
 
 // Which district polygon contains a point (ray casting; handles Polygon and MultiPolygon).
 function inRing(lon, lat, ring) {
@@ -18,7 +19,7 @@ export function districtAt(geo, lat, lon) {
 }
 
 const EN = {
-  gps: "📍 Use my location", finding: "Finding you…", or: "or", search: "Type your district, town or village", district: "district",
+  gps: "Use my location", finding: "Finding you…", or: "or", search: "Type your district, town or village", district: "district",
   myLoc: (d) => `My location (${d})`,
   noGps: "This phone or browser cannot give a location. Type your district instead.",
   outside: "Your location is outside Sri Lanka. Type your district instead.",
@@ -73,7 +74,7 @@ export default function LocationPicker({ geo, onPick, big = false, t = EN, distr
 
   return (
     <div className={`locpick ${big ? "big" : ""}`}>
-      <button type="button" className="btn gps" onClick={gps} disabled={busy}>{busy ? t.finding : t.gps}</button>
+      <button type="button" className="btn gps" onClick={gps} disabled={busy}>{busy ? <LoaderCircle className="spin" size={20} aria-hidden="true" /> : <LocateFixed size={20} aria-hidden="true" />} {busy ? t.finding : t.gps}</button>
       <div className="or">{t.or}</div>
       <div className="search">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.search} aria-label={t.search} autoComplete="off" />

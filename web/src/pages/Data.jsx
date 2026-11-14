@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { useData, INK } from "../lib/data.js";
 import EChart, { axis } from "../components/EChart.jsx";
 import { Card, Loading } from "../components/ui.jsx";
@@ -21,7 +22,7 @@ export function AblationTable({ rows, chosen }) {
     <table className="tbl">
       <thead><tr><th>Data given to the model</th><th>Best model</th><th className="num">2011–2020 check</th><th className="num">Maha 2021 test</th><th className="num">Yala 2021 test</th></tr></thead>
       <tbody>{rows.map((r) => (
-        <tr key={r.set} className={r.set === chosen ? "sel" : ""}><td>{r.set}{r.set === chosen ? " ✓ chosen" : ""}</td><td>{r.model}</td>
+        <tr key={r.set} className={r.set === chosen ? "sel" : ""}><td>{r.set}{r.set === chosen ? <span className="chosen"><Check size={14} strokeWidth={2.5} aria-hidden="true" /> chosen</span> : ""}</td><td>{r.model}</td>
           <td className="num">{r.cv_rmse.toFixed(3)}</td><td className="num">{r.test_maha_rmse.toFixed(3)}</td><td className="num">{r.test_yala_rmse.toFixed(3)}</td></tr>))}</tbody>
     </table>
   );

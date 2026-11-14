@@ -4,17 +4,19 @@ import { useData, CROP_COLORS } from "../lib/data.js";
 import { planRotations, explain } from "../lib/model.js";
 import { savePlan } from "../lib/store.js";
 import { useLang, LangSwitch } from "../lib/i18n.jsx";
+import { ArrowRight, Banknote, CircleCheck, CloudRain, Cylinder, Droplets, MapPin, ShieldCheck, Sprout, TriangleAlert, Waves } from "lucide-react";
 import LocationPicker from "../components/LocationPicker.jsx";
 import { Loading } from "../components/ui.jsx";
 
 // Same presets as the text channel, so the phone app and the SMS-style bot give the same answer.
 const GOALS = {
-  income: { icon: "💰", w: { profit: 9, risk: 4, water: 2, soil: 2, erosion: 1, pest: 2 } },
-  water: { icon: "💧", w: { profit: 4, risk: 4, water: 9, soil: 3, erosion: 2, pest: 2 } },
-  soil: { icon: "🌱", w: { profit: 4, risk: 3, water: 3, soil: 9, erosion: 5, pest: 5 } },
-  safe: { icon: "🛡️", w: { profit: 4, risk: 9, water: 4, soil: 3, erosion: 2, pest: 3 } },
+  income: { icon: Banknote, w: { profit: 9, risk: 4, water: 2, soil: 2, erosion: 1, pest: 2 } },
+  water: { icon: Droplets, w: { profit: 4, risk: 4, water: 9, soil: 3, erosion: 2, pest: 2 } },
+  soil: { icon: Sprout, w: { profit: 4, risk: 3, water: 3, soil: 9, erosion: 5, pest: 5 } },
+  safe: { icon: ShieldCheck, w: { profit: 4, risk: 9, water: 4, soil: 3, erosion: 2, pest: 3 } },
 };
-const WATER = { rain: "🌧️", tank: "🚰", well: "⛲" };
+const WATER = { rain: CloudRain, tank: Waves, well: Cylinder };
+const Ico = ({ as: I, size = 28 }) => <I size={size} strokeWidth={1.75} aria-hidden="true" />;
 const money = (v) => `Rs ${Math.round(v / 1000).toLocaleString()},000`;
 
 export default function Simple() {
@@ -48,7 +50,7 @@ export default function Simple() {
       <section className="s-step">
         <h2><span>1</span> {t.where}</h2>
         {place ? (
-          <div className="s-picked"><b>📍 {placeName}</b><button className="link" onClick={() => { setPlace(null); setShown(false); setSaved(null); }}>{t.change}</button></div>
+          <div className="s-picked"><b><MapPin className="pin" size={22} aria-hidden="true" /> {placeName}</b><button className="link" onClick={() => { setPlace(null); setShown(false); setSaved(null); }}>{t.change}</button></div>
         ) : (
           <LocationPicker geo={geo} big t={t} district={district} onPick={(id, pos, label, info) => { setPlace({ id, pos, ...info }); setSaved(null); }} />
         )}
@@ -57,13 +59,13 @@ export default function Simple() {
       <section className="s-step">
         <h2><span>2</span> {t.waterQ}</h2>
         <div className="s-choices three">{Object.entries(WATER).map(([k, icon]) => (
-          <button key={k} className={water === k ? "on" : ""} aria-pressed={water === k} onClick={() => { setWater(k); setSaved(null); }}><i>{icon}</i>{t[k]}</button>))}</div>
+          <button key={k} className={water === k ? "on" : ""} aria-pressed={water === k} onClick={() => { setWater(k); setSaved(null); }}><i><Ico as={icon} /></i>{t[k]}</button>))}</div>
       </section>
 
       <section className="s-step">
         <h2><span>3</span> {t.goalQ}</h2>
         <div className="s-choices four">{Object.entries(GOALS).map(([k, g]) => (
-          <button key={k} className={goal === k ? "on" : ""} aria-pressed={goal === k} onClick={() => { setGoal(k); setSaved(null); }}><i>{g.icon}</i>{t[k]}</button>))}</div>
+          <button key={k} className={goal === k ? "on" : ""} aria-pressed={goal === k} onClick={() => { setGoal(k); setSaved(null); }}><i><Ico as={g.icon} /></i>{t[k]}</button>))}</div>
       </section>
 
       {!shown && <button className="s-go" disabled={!place} onClick={() => setShown(true)}>{place ? t.show : t.pickFirst}</button>}
@@ -85,21 +87,21 @@ export default function Simple() {
                 {i === 0 && <div className="s-badge">{t.best}</div>}
                 <div className="s-seasons">
                   <div><small>{t.maha}</small><b><span className="dot" style={{ background: CROP_COLORS[sim.rot.maha] }} />{cropName(sim.rot.maha)}</b></div>
-                  <div className="s-arrow">→</div>
+                  <div className="s-arrow"><ArrowRight size={22} aria-hidden="true" /></div>
                   <div><small>{t.yala}</small><b><span className="dot" style={{ background: CROP_COLORS[sim.rot.yala] }} />{cropName(sim.rot.yala)}</b></div>
                 </div>
                 <p className="s-money">{money(sim.annualProfit[0])} {t.to} {money(sim.annualProfit[2])} <small>{t.perYear}</small></p>
                 <p className="s-why">{why}</p>
-                {sim.suit !== "pass" && <p className="s-care">{t.care}</p>}
+                {sim.suit !== "pass" && <p className="s-care"><TriangleAlert className="warn-ico" size={18} aria-hidden="true" />{t.care}</p>}
                 {saved === sim
-                  ? <p className="s-saved">{t.saved}</p>
+                  ? <p className="s-saved"><CircleCheck size={20} aria-hidden="true" />{t.saved}</p>
                   : <button className="s-pick" onClick={() => choose(sim)}>{t.grow}</button>}
               </article>
             );
           })}
           <p className="s-now">{t.now} <b>{cropName(res.existing.rot.maha)} → {cropName(res.existing.rot.yala)}</b>, {money(res.existing.annualProfit[0])} {t.to} {money(res.existing.annualProfit[2])} {t.aYear}.</p>
           <p className="s-foot">{t.foot}</p>
-          <Link className="s-adv" to={`/farmer?district=${place.id}`}>{t.detail}</Link>
+          <Link className="s-adv" to={`/farmer?district=${place.id}`}>{t.detail} <ArrowRight size={18} aria-hidden="true" /></Link>
         </section>
       )}
     </div>

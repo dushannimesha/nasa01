@@ -1,3 +1,4 @@
+import { CircleAlert, CircleCheck, CircleX, Info, TriangleAlert } from "lucide-react";
 import { CROP_COLORS } from "../lib/data.js";
 
 export function SampleBanner({ meta }) {
@@ -49,8 +50,12 @@ export function Slider({ label, value, min, max, step = 1, unit = "", onChange, 
 
 export const Loading = ({ error }) => <div className="loading">{error ? `Could not load data: ${error.message}` : "Loading…"}</div>;
 
-const SUIT = { pass: ["✓", "Suitable", "good"], warn: ["!", "Needs care", "warning"], fail: ["✕", "Not suitable", "critical"] };
+// Severity icons (Lucide line icons), shared by status badges and advice lists
+export const LEVEL_ICON = { good: CircleCheck, info: Info, warning: TriangleAlert, serious: CircleAlert, critical: CircleX };
+export const LevelIcon = ({ level, size = 18 }) => { const I = LEVEL_ICON[level] || Info; return <I className="lvl-icon" size={size} strokeWidth={2} aria-hidden="true" />; };
+
+const SUIT = { pass: ["Suitable", "good"], warn: ["Needs care", "warning"], fail: ["Not suitable", "critical"] };
 export function Suit({ level }) {
-  const [icon, text, cls] = SUIT[level] || SUIT.pass;
-  return <span className={`status ${cls}`}><i>{icon}</i>{text}</span>;
+  const [text, cls] = SUIT[level] || SUIT.pass;
+  return <span className={`status ${cls}`}><LevelIcon level={cls} size={16} />{text}</span>;
 }
