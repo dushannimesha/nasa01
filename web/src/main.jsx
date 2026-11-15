@@ -44,7 +44,7 @@ function Header() {
   const { t } = useLang();
   if (pathname === "/2021") return (
     <header className="top">
-      <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b>Field Shift</b><small>Evaluation report · crop year 2021</small></div></div>
+      <div className="brand"><img src="/icon.svg" alt="" width="28" height="28" /><div><b> Aswanna.Ai🌿</b><small> Sri Lanka </small></div></div>
       <nav><a href="/">Open the app <ExternalLink size={14} aria-hidden="true" /></a></nav>
     </header>
   );
