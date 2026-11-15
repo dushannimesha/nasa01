@@ -35,6 +35,7 @@ const T = {
     tagline: "Crop advice for your field",
     disclaimer: "Decision support only. It does not replace farmer judgment or the advice of agricultural officers.",
     offline: "Offline: using saved data",
+    login: "Log in with your mobile", loginWhy: "Optional. Keeps your plans and lets us send advice by SMS.", phone: "Mobile number", sendCode: "Send code", code: "6-digit code from the SMS", verify: "Log in", sentTo: (m) => `Code sent to ${m}. It works for 5 minutes.`, loggedAs: (m) => `Logged in: ${m}`, logout: "Log out", smsAsk: "Send me this advice by SMS each season", smsDone: "Done. Season advice will come by SMS.",
   },
   si: {
     title: "මම මොනවද වගා කරන්න ඕනේ?",
@@ -65,6 +66,7 @@ const T = {
     tagline: "ඔබේ කුඹුරට බෝග උපදෙස්",
     disclaimer: "මෙය තීරණ ගැනීමට උදව්වක් පමණයි. ගොවියාගේ විනිශ්චය හෝ කෘෂිකර්ම නිලධාරීන්ගේ උපදෙස් වෙනුවට නොවේ.",
     offline: "අන්තර්ජාලය නැත: සුරැකි දත්ත භාවිතා කරයි",
+    login: "ජංගම අංකයෙන් ඇතුළු වන්න", loginWhy: "අනිවාර්ය නැත. ඔබේ සැලසුම් සුරකින්න සහ SMS මගින් උපදෙස් ලබා ගන්න.", phone: "ජංගම දුරකථන අංකය", sendCode: "කේතය යවන්න", code: "SMS එකේ ඇති ඉලක්කම් 6 කේතය", verify: "ඇතුළු වන්න", sentTo: (m) => `කේතය ${m} වෙත යැව්වා. මිනිත්තු 5ක් වලංගුයි.`, loggedAs: (m) => `ඇතුළු වී ඇත: ${m}`, logout: "පිටවන්න", smsAsk: "සෑම කන්නයකම මෙම උපදෙස් SMS මගින් එවන්න", smsDone: "හරි. කන්න උපදෙස් SMS මගින් ලැබේ.",
   },
   ta: {
     title: "நான் என்ன பயிரிட வேண்டும்?",
@@ -95,6 +97,7 @@ const T = {
     tagline: "உங்கள் வயலுக்கான பயிர் ஆலோசனை",
     disclaimer: "இது முடிவெடுக்க உதவும் கருவி மட்டுமே. விவசாயியின் முடிவையோ விவசாய அலுவலர்களின் ஆலோசனையையோ மாற்றாது.",
     offline: "இணைய இணைப்பு இல்லை: சேமித்த தரவு பயன்படுகிறது",
+    login: "கைபேசி எண் மூலம் உள்நுழைக", loginWhy: "கட்டாயமில்லை. உங்கள் திட்டங்களைச் சேமித்து, SMS மூலம் ஆலோசனை பெறலாம்.", phone: "கைபேசி எண்", sendCode: "குறியீட்டை அனுப்பு", code: "SMS இல் வந்த 6 இலக்கக் குறியீடு", verify: "உள்நுழைக", sentTo: (m) => `குறியீடு ${m} க்கு அனுப்பப்பட்டது. 5 நிமிடங்கள் செல்லுபடியாகும்.`, loggedAs: (m) => `உள்நுழைந்துள்ளீர்கள்: ${m}`, logout: "வெளியேறு", smsAsk: "ஒவ்வொரு போகத்திலும் இந்த ஆலோசனையை SMS மூலம் அனுப்பவும்", smsDone: "சரி. போக ஆலோசனை SMS மூலம் வரும்.",
   },
 };
 

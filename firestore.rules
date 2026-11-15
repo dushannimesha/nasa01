@@ -37,6 +37,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Public address of the API (phone login), written by the server when it starts.
+    match /config/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Messages sent, phone numbers masked. Written only by the sender script.
     match /outbox/{id} {
       allow read: if true;

@@ -14,6 +14,8 @@ Endpoints
                                               ?rain_pct=-20&temp_c=1 runs a what-if on the 2021 weather
   POST /api/plan                              ranked rotations (same engine as the web app)
   POST /api/text                              {"user": "...", "text": "PLAN"} -> {"reply": "..."}  (SMS / chat bridge)
+  POST /api/otp/send                          {"phone": "07..."} -> {"reqid"}   texts a login code (MoceanAPI)
+  POST /api/otp/verify                        {"reqid", "code"} -> {"token"}    Firebase custom token for that phone
 Run:  uvicorn api.main:app --host 0.0.0.0 --port 8000      (from the repository root)
 """
 import json
@@ -24,13 +26,13 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "web/public/data"
-sys.path[:0] = [str(ROOT / "channels"), str(ROOT / "models")]
+sys.path[:0] = [str(ROOT / "channels"), str(ROOT / "models"), str(ROOT / "api")]
 from text_flow import reply as text_reply  # noqa: E402
 
 app = FastAPI(title="Field Shift API", version="1.0")
@@ -135,3 +137,53 @@ class TextIn(BaseModel):
 @app.post("/api/text")
 def text(msg: TextIn):
     return {"reply": text_reply(f"api:{msg.user}", msg.text)}
+
+
+# ---- Phone login (OTP by SMS through MoceanAPI) ----
+# The website asks for a code, the farmer types it, and on success gets a Firebase custom token for their number.
+import time  # noqa: E402
+
+import otp  # noqa: E402
+
+_ip_hits = {}
+
+
+def _ip_ok(request, limit=10):
+    ip = request.client.host if request.client else "?"
+    now = time.time()
+    hits = [t for t in _ip_hits.get(ip, []) if now - t < 3600]
+    _ip_hits[ip] = hits + [now]
+    return len(hits) < limit
+
+
+class OtpSend(BaseModel):
+    phone: str = Field(..., max_length=20)
+    lang: str = Field("en", pattern="^(en|si|ta)$")
+
+
+class OtpCheck(BaseModel):
+    reqid: str = Field(..., max_length=64)
+    code: str = Field(..., max_length=8)
+
+
+@app.post("/api/otp/send")
+def otp_send(body: OtpSend, request: Request):
+    if not _ip_ok(request):
+        raise HTTPException(429, "Too many requests from this network. Try again later.")
+    r = otp.send_code(body.phone, body.lang)
+    if not r["ok"]:
+        raise HTTPException(400, r["error"])
+    return {"reqid": r["reqid"], "phone": r["phone"][:5] + "***" + r["phone"][-4:]}
+
+
+@app.post("/api/otp/verify")
+def otp_verify(body: OtpCheck):
+    r = otp.check_code(body.reqid, body.code)
+    if not r["ok"]:
+        raise HTTPException(400, r["error"])
+    import firebase_admin
+    from firebase_admin import auth, credentials
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(credentials.Certificate(str(ROOT / "firebase-service-account.json")))
+    token = auth.create_custom_token(r["phone"], {"role": "farmer"}).decode()
+    return {"token": token, "phone": r["phone"]}

@@ -34,7 +34,8 @@ const listeners = new Set();
 let fsBroken = false; // set when the register cannot be read (rules, no database); plans then stay on the device
 
 export async function savePlan(plan) {
-  const doc = { ...plan, createdAt: new Date().toISOString() };
+  const owner = await currentUid();
+  const doc = { ...plan, ...(owner ? { owner } : {}), createdAt: new Date().toISOString() };
   const f = fsBroken ? null : await firestore().catch(() => null);
   if (f) {
     // not awaited on purpose: offline writes resolve only after sync, the local cache updates at once
@@ -97,6 +98,55 @@ function useLive(collection, n) {
 }
 export const useOutbox = () => useLive("outbox", 60);
 export const useCampaigns = () => useLive("campaigns", 5);
+
+// ---- Farmer login by phone (OTP) ----
+// The API's public address is kept in Firestore (config/api), written by the server when it starts, so the site
+// needs no rebuild when the address changes. No address = login is hidden and the app works as before.
+export function useApiUrl() {
+  const [url, setUrl] = useState(null);
+  useEffect(() => {
+    let unsub = () => {};
+    firestore().then((f) => {
+      if (!f) return;
+      unsub = f.m.onSnapshot(f.m.doc(f.db, "config", "api"), (d) => setUrl(d.exists() && d.data().url ? d.data().url.replace(/\/$/, "") : null), () => setUrl(null));
+    });
+    return () => unsub();
+  }, []);
+  return url;
+}
+
+let authMod = null;
+async function fbAuth() {
+  const f = await firestore();
+  if (!f) return null;
+  if (!authMod) authMod = (async () => { const m = await import("firebase/auth"); const { getApp } = await import("firebase/app"); return { m, auth: m.getAuth(getApp()) }; })();
+  return authMod;
+}
+
+export function useUser() {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    let unsub = () => {};
+    fbAuth().then((a) => { if (a) unsub = a.m.onAuthStateChanged(a.auth, (u) => setUser(u ? { uid: u.uid } : null)); });
+    return () => unsub();
+  }, []);
+  return user;
+}
+
+async function post(api, path, body) {
+  const r = await fetch(`${api}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || "The login service did not answer. Try again in a minute.");
+  return j;
+}
+export const sendLoginCode = (api, phone, lang = "en") => post(api, "/api/otp/send", { phone, lang });
+export async function verifyLoginCode(api, reqid, code) {
+  const { token } = await post(api, "/api/otp/verify", { reqid, code });
+  const a = await fbAuth();
+  await a.m.signInWithCustomToken(a.auth, token);
+}
+export async function logOut() { const a = await fbAuth(); if (a) await a.m.signOut(a.auth); }
+export async function currentUid() { const a = await fbAuth().catch(() => null); return a?.auth.currentUser?.uid || null; }
 
 // Sum of registered area per district, season and crop; feeds the market loop and the gov coverage figure.
 export function aggregatePlans(plans) {

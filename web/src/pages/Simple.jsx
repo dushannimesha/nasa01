@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useData, CROP_COLORS } from "../lib/data.js";
 import { planRotations, explain } from "../lib/model.js";
-import { savePlan } from "../lib/store.js";
+import { addFarmer, savePlan, useUser } from "../lib/store.js";
+import LoginBox from "../components/LoginBox.jsx";
 import { useLang, LangSwitch } from "../lib/i18n.jsx";
 import { ArrowRight, Banknote, CircleCheck, CloudRain, Cylinder, Droplets, MapPin, ShieldCheck, Sprout, TriangleAlert, Waves } from "lucide-react";
 import LocationPicker from "../components/LocationPicker.jsx";
@@ -28,6 +29,8 @@ export default function Simple() {
   const [goal, setGoal] = useState("income");
   const [shown, setShown] = useState(params.get("show") === "1");
   const [saved, setSaved] = useState(null);
+  const user = useUser();
+  const [smsOk, setSmsOk] = useState(false);
   const [packData] = useData(place ? [`/data/packs/${place.id}.json`] : []);
   const pack = place && packData?.[0]?.id === place.id ? packData[0] : null;
 
@@ -45,6 +48,7 @@ export default function Simple() {
   return (
     <div className="simple" lang={lang}>
       <LangSwitch />
+      <LoginBox t={t} lang={lang} />
       <h1>{t.title}</h1>
 
       <section className="s-step">
@@ -100,6 +104,7 @@ export default function Simple() {
             );
           })}
           <p className="s-now">{t.now} <b>{cropName(res.existing.rot.maha)} → {cropName(res.existing.rot.yala)}</b>, {money(res.existing.annualProfit[0])} {t.to} {money(res.existing.annualProfit[2])} {t.aYear}.</p>
+          {user && (smsOk ? <p className="s-saved">{t.smsDone}</p> : <button className="s-pick" onClick={async () => { await addFarmer({ phone: user.uid, district: place.id, water, goal, lang }); setSmsOk(true); }}>{t.smsAsk}</button>)}
           <p className="s-foot">{t.foot}</p>
           <Link className="s-adv" to={`/farmer?district=${place.id}`}>{t.detail} <ArrowRight size={18} aria-hidden="true" /></Link>
         </section>
